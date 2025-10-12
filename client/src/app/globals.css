@@ -38,11 +38,6 @@
   scrollbar-width: none;
 }
 
-/* Apply FalseNine (RailwayGank) font globally */
-body {
-  font-family: var(--font-falsenine);
-}
-
 /* Utility classes for font switching */
 .font-falsenine {
   font-family: var(--font-falsenine);
