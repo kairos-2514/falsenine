@@ -12,6 +12,16 @@
   font-style: normal;
   font-display: swap;
 }
+@font-face {
+  font-family: "Falsenine-mainheading";
+  src: url("/fonts/01f440eff849863a237690075ef515ef.eot");
+  src: url("/fonts/01f440eff849863a237690075ef515ef.ttf") format("truetype");
+  src: url("/fonts/01f440eff849863a237690075ef515ef.woff") format("woff");
+  src: url("/fonts/01f440eff849863a237690075ef515ef.woff2") format("woff2");
+  font-weight: bold;
+  font-style: normal;
+  font-display: swap;
+}
 
 :root {
   --color-luna: #cec8bc;
@@ -22,7 +32,7 @@
   /* Font families as CSS variables for easy access */
   --font-falsenine: "FalseNine", sans-serif;
   --font-montserrat: "Montserrat", sans-serif;
-  --font-inter: "Inter", sans-serif;
+  --font-falsenine-mainheading: "Falsenine-mainheading", sans-serif;
 }
 
 /* Hide scrollbar for Chrome, Safari and Opera */
@@ -47,6 +57,6 @@
   font-family: var(--font-montserrat);
 }
 
-.font-inter {
-  font-family: var(--font-inter);
+.font-falsenine-mainheading {
+  font-family: var(--font-falsenine-mainheading);
 }
