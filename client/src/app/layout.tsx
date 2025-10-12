@@ -5,7 +5,7 @@ import { ROUTE_METADATA, SOCIAL_LINKS } from "@/lib/navigation";
 // Dynamic metadata generation based on route metadata from navigation.ts
 export const metadata: Metadata = {
   title: {
-    default: "FalseNine — Born from Football, Built for Streets",
+    default: "FalseNine - Born from Football, Built for Streets",
     template: "%s | FalseNine",
   },
   description:
@@ -18,7 +18,7 @@ export const metadata: Metadata = {
     "urban football apparel",
     "premium jerseys",
     "street fashion",
-    "performance wear",
+   "performance wear",
   ],
   metadataBase: new URL("https://falseninejersey.shop"),
   openGraph: {
