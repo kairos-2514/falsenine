@@ -55,14 +55,16 @@ export interface PerformanceMetrics {
 // ============================================================================
 
 export const ROUTES = {
-  THE_PLAY: "/",
-  DRIP_ROOM: "/drip-room",
-  DRIP_ROOM_DETAIL: "/drip-room/[id]",
-  TOUCHLINE: "/touchline",
-  LOCKER: "/locker",
-  PLAYER_CARD: "/player-card",
-  THE_PLAYBOOK: "/the-playbook",
-  THE_CODE: "/the-code",
+  THE_PLAY: "/", //homepage
+  DRIP_ROOM: "/drip-room", //product listing
+  DRIP_ROOM_DETAIL: "/drip-room/[id]", //product detail
+  TOUCHLINE: "/touchline", //contact us
+  LOCKER: "/locker", //cart
+  PLAYER_CARD: "/player-card", //user profile
+  THE_PLAYBOOK: "/the-playbook", //terms and conditions
+  THE_CODE: "/the-code", //privacy policy
+  ON_THE_MOVE: "/on-the-move", //delivery policy
+  REFUND_KICK: "/refund-kick", //refund n return policy
 
   // Auth Routes (Nested under /kickoff folder)
   ENTER_PITCH: "/kickoff/enter-the-pitch",
@@ -82,11 +84,12 @@ export const SOCIAL_LINKS = {
   INSTAGRAM: "https://instagram.com/kairos.artifex",
   TWITTER: "https://x.com/kairosartifex",
   PINTEREST: "https://pinterest.com/kairosartifex",
+  DEVELOPERS: "https://www.kairosagency.xyz",
 } as const;
 
 export const CONTACT_LINKS = {
-  EMAIL: "mailto:support@falsenine.com",
-  PHONE: "tel:+1-xxx-xxx-xxxx",
+  EMAIL: "mailto:falsenine.in@gmail.com",
+  PHONE: "tel:+919004220720", //cypher's contact number
 } as const;
 
 export type SocialPlatform = keyof typeof SOCIAL_LINKS;
@@ -101,6 +104,7 @@ const ALLOWED_EXTERNAL_DOMAINS = [
   "x.com",
   "twitter.com",
   "pinterest.com",
+  "kairosagency.xyz",
 ] as const;
 
 /** Protocols considered safe for navigation */
@@ -137,6 +141,20 @@ export const ROUTE_METADATA: Record<string, RouteMetadata> = {
       "streetwear",
       "athletic fashion",
       "FalseNine",
+    ],
+    prefetchPriority: "high",
+  },
+
+  [ROUTES.DRIP_ROOM_DETAIL]: {
+    title: "Product Details - Drip Room",
+    description:
+      "Discover the details of premium football-inspired streetwear. Quality materials, unique designs, and the perfect fit for your game.",
+    keywords: [
+      "product details",
+      "football streetwear",
+      "sportswear details",
+      "FalseNine product",
+      "streetwear specs",
     ],
     prefetchPriority: "high",
   },
@@ -198,6 +216,36 @@ export const ROUTE_METADATA: Record<string, RouteMetadata> = {
       "user privacy",
       "FalseNine",
       "security",
+    ],
+    prefetchPriority: "low",
+    lazy: true,
+  },
+
+  [ROUTES.ON_THE_MOVE]: {
+    title: "On the Move - Delivery Policy",
+    description:
+      "Fast, reliable delivery to keep you moving. Learn about FalseNine's shipping options, timelines, and tracking.",
+    keywords: [
+      "delivery policy",
+      "shipping",
+      "delivery times",
+      "FalseNine shipping",
+      "order tracking",
+    ],
+    prefetchPriority: "low",
+    lazy: true,
+  },
+
+  [ROUTES.REFUND_KICK]: {
+    title: "Refund Kick - Returns & Refunds",
+    description:
+      "Not the right fit? No worries. Learn about our hassle-free returns and refund process at FalseNine.",
+    keywords: [
+      "refund policy",
+      "return policy",
+      "exchanges",
+      "FalseNine returns",
+      "money back",
     ],
     prefetchPriority: "low",
     lazy: true,

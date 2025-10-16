@@ -25,10 +25,23 @@
   font-display: swap;
 }
 
+/* Tailwind Theme Configuration */
+@theme {
+  --color-luna: #cec8bc;
+  --color-night: #0d0208;
+  --color-flame: #ed1b24;
+  --color-iron: #d8d8d8;
+  --color-white: #ffffff;
+
+  --font-family-falsenine: "FalseNine", sans-serif;
+  --font-family-falsenine-mainheading: "Falsenine-mainheading", sans-serif;
+  --font-family-montserrat: "Montserrat", sans-serif;
+}
+
 :root {
   --color-luna: #cec8bc;
   --color-night: #0d0208;
-  --color-flame: #ff1800;
+  --color-flame: #ed1b24;
   --color-iron: #d8d8d8;
   --font-falsenine: "FalseNine", sans-serif;
   --font-falsenine-mainheading: "Falsenine-mainheading", sans-serif;
