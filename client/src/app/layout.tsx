@@ -1,10 +1,11 @@
 import type { Metadata } from "next";
 import "./globals.css";
-import { ROUTE_METADATA, SOCIAL_LINKS } from "@/lib/navigation";
+import { ROUTE_METADATA, socialLinks as SOCIAL_LINKS } from "@/lib/navigation";
+import { seoConfig } from "@/config/seo-config";
 // Dynamic metadata generation based on route metadata from navigation.ts
 export const metadata: Metadata = {
   title: {
-    default: "FalseNine - Born from Football, Built for Streets",
+    default: "FalseNine",
     template: "%s | FalseNine",
   },
   description:
@@ -24,7 +25,7 @@ export const metadata: Metadata = {
     type: "website",
     locale: "en_US",
     siteName: "FalseNine",
-    title: "FalseNine — Born from Football, Built for Streets",
+    title: "FalseNine",
     description:
       "Premium football-inspired streetwear brand redefining sports fashion. Born from the game, built for the streets.",
     images: [
@@ -75,25 +76,8 @@ export const metadata: Metadata = {
   },
 };
 
-// Structured data for better SEO
-const structuredData = {
-  "@context": "https://schema.org",
-  "@type": "ClothingStore",
-  name: "FalseNine",
-  description:
-    "Premium football-inspired streetwear brand. Born from the game, built for the streets.",
-  url: "https://falseninejersey.shop",
-  logo: "https://falseninejersey.shop/falsenine-logo.jpg",
-  sameAs: [
-    SOCIAL_LINKS.INSTAGRAM,
-    SOCIAL_LINKS.TWITTER,
-    SOCIAL_LINKS.PINTEREST,
-  ],
-  address: {
-    "@type": "PostalAddress",
-    addressCountry: "IN",
-  },
-};
+// Structured data for better SEO - using centralized config
+const structuredData = seoConfig.createOrganizationSchema();
 
 export default function RootLayout({
   children,

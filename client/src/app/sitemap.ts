@@ -1,0 +1,74 @@
+import type { MetadataRoute } from "next";
+import { ROUTES } from "@/lib/navigation";
+
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
+  const baseUrl = "https://falseninejersey.shop";
+  const currentDate = new Date();
+
+  // Static routes
+  const staticRoutes: MetadataRoute.Sitemap = [
+    {
+      url: baseUrl,
+      lastModified: currentDate,
+      changeFrequency: "daily",
+      priority: 1.0,
+    },
+    {
+      url: `${baseUrl}${ROUTES.DRIP_ROOM}`,
+      lastModified: currentDate,
+      changeFrequency: "daily",
+      priority: 0.9,
+    },
+    {
+      url: `${baseUrl}${ROUTES.TOUCHLINE}`,
+      lastModified: currentDate,
+      changeFrequency: "monthly",
+      priority: 0.7,
+    },
+    {
+      url: `${baseUrl}${ROUTES.THE_PLAYBOOK}`,
+      lastModified: currentDate,
+      changeFrequency: "yearly",
+      priority: 0.5,
+    },
+    {
+      url: `${baseUrl}${ROUTES.THE_CODE}`,
+      lastModified: currentDate,
+      changeFrequency: "yearly",
+      priority: 0.5,
+    },
+    {
+      url: `${baseUrl}${ROUTES.ON_THE_MOVE}`,
+      lastModified: currentDate,
+      changeFrequency: "yearly",
+      priority: 0.5,
+    },
+    {
+      url: `${baseUrl}${ROUTES.REFUND_KICK}`,
+      lastModified: currentDate,
+      changeFrequency: "yearly",
+      priority: 0.5,
+    },
+  ];
+
+  // TODO: Add dynamic product routes when you have product data
+  // Uncomment and modify this section when ready:
+  /*
+  try {
+    const products = await fetchProducts(); // Your product fetching function
+    const productRoutes: MetadataRoute.Sitemap = products.map((product) => ({
+      url: `${baseUrl}${ROUTES.DRIP_ROOM}/${product.slug}`,
+      lastModified: product.updatedAt ? new Date(product.updatedAt) : currentDate,
+      changeFrequency: "weekly",
+      priority: 0.8,
+    }));
+    
+    return [...staticRoutes, ...productRoutes];
+  } catch (error) {
+    console.error("[Sitemap] Error fetching products:", error);
+    return staticRoutes;
+  }
+  */
+
+  return staticRoutes;
+}
