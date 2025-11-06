@@ -1,49 +1,44 @@
-// app/page.tsx
-import type { Metadata } from "next";
-import { seoConfig } from "@/config/seo-config";
-import { ROUTES } from "@/lib/navigation";
+import React from "react";
+import Image from "next/image";
 
-// Generate metadata for homepage
-export const metadata: Metadata = {
-  ...seoConfig.getPageMetadata(ROUTES.THE_PLAY),
-  alternates: {
-    canonical: seoConfig.getCanonicalUrl(ROUTES.THE_PLAY),
-  },
-};
-
-export default function HomePage() {
-  // Generate structured data for homepage
-  const websiteSchema = seoConfig.createWebsiteSchema();
-  const faqSchema = seoConfig.createFAQSchema();
-
+export default function HeroSection() {
   return (
-    <>
-      {/* Inject structured data */}
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{
-          __html: JSON.stringify(websiteSchema),
-        }}
-      />
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{
-          __html: JSON.stringify(faqSchema),
-        }}
-      />
-
-      <main className="flex flex-col min-h-screen bg-luna">
-        {/* Hero / Main Section */}
-        <section className="flex-grow flex flex-col items-center justify-center text-center px-6 py-24">
-          <h1 className="font-falsenine text-5xl md:text-6xl tracking-widest mb-6">
-            WELCOME TO <span className="text-flame">FALSE NINE</span>
+    <div className="relative min-h-screen bg-[#4169B8] overflow-hidden">
+      {/* Hero Content */}
+      <div className="relative h-screen flex items-center justify-center">
+        {/* Large Text - Bottom Left */}
+        <div className="absolute left-16 bottom-16 z-20">
+          <h1 className="text-white text-[9rem] lg:text-[12rem] xl:text-[14rem] font-thunder font-extralight leading-[0.85] tracking-tight">
+            FALSE
+            <br />
+            NINE
           </h1>
-          <p className="font-montserrat text-night max-w-lg text-sm md:text-base leading-relaxed uppercase">
-            Game built. Street tested. Premium football-inspired streetwear for
-            players who move different.
+        </div>
+
+        {/* Full Screen Center Image */}
+        <div className="absolute inset-0 w-full h-full">
+          <Image
+            src="/hero-section-image.png"
+            alt="Model wearing False Nine jersey"
+            fill
+            className="object-cover"
+            priority
+          />
+        </div>
+
+        {/* Right Side Text */}
+        <div className="absolute right-12 lg:right-20 top-1/2 -translate-y-1/2 z-20 text-white text-right space-y-12">
+          <p className="text-lg lg:text-xl tracking-[0.4em]">
+            ( PLAY DIFFERENT )
           </p>
-        </section>
-      </main>
-    </>
+          <div className="text-xs lg:text-sm leading-loose tracking-[0.25em] space-y-1">
+            <p>BORN FROM THE GAME.</p>
+            <p>BUILT FOR THE STREETS.</p>
+            <p>FALSE NINE REDEFINES HOW</p>
+            <p>FOOTBALL MEETS FASHION.</p>
+          </div>
+        </div>
+      </div>
+    </div>
   );
 }

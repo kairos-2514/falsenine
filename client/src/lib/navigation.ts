@@ -58,7 +58,6 @@ export const ROUTES = {
   THE_PLAY: "/", //homepage
   DRIP_ROOM: "/drip-room", //product listing
   DRIP_ROOM_DETAIL: "/drip-room/[id]", //product detail
-  TOUCHLINE: "/touchline", //contact us
   LOCKER: "/locker", //cart
   PLAYER_CARD: "/player-card", //user profile
   THE_PLAYBOOK: "/the-playbook", //terms and conditions
@@ -67,10 +66,10 @@ export const ROUTES = {
   REFUND_KICK: "/refund-kick", //refund n return policy
 
   // Auth Routes (Nested under /kickoff folder)
-  ENTER_PITCH: "/kickoff/enter-the-pitch",
-  JOIN_SQUAD: "/kickoff/join-the-squad",
-  LOST_PLAY: "/kickoff/lost-the-play",
-  NEW_FORMATION: "/kickoff/new-formation",
+  ENTER_PITCH: "/enter-the-pitch",
+  JOIN_SQUAD: "/join-the-squad",
+  LOST_PLAY: "/lost-the-play",
+  NEW_FORMATION: "/new-formation",
 } as const;
 
 export type RouteKey = keyof typeof ROUTES;
@@ -159,22 +158,6 @@ export const ROUTE_METADATA: Record<string, RouteMetadata> = {
     prefetchPriority: "high",
   },
 
-  [ROUTES.TOUCHLINE]: {
-    title: "Touchline - Contact Us",
-    description:
-      "Reach out to the FalseNine squad. We're here for collabs, questions, and all things football fashion.",
-    keywords: [
-      "contact",
-      "support",
-      "customer service",
-      "inquiries",
-      "FalseNine",
-      "help",
-    ],
-    prefetchPriority: "medium",
-    lazy: true,
-  },
-
   [ROUTES.LOCKER]: {
     title: "Locker - Your Cart",
     description:
@@ -252,18 +235,16 @@ export const ROUTE_METADATA: Record<string, RouteMetadata> = {
   },
 
   [ROUTES.ENTER_PITCH]: {
-    title: "Enter the Pitch - Login",
-    description:
-      "Step back onto the pitch. Log in to your FalseNine account and keep your game on track.",
-    keywords: ["login", "sign in", "account", "authentication"],
+    title: "Enter the Pitch - Sign Up",
+    description: "Create your FalseNine account and step onto the pitch.",
+    keywords: ["signup", "register", "create account", "join"],
     prefetchPriority: "medium",
   },
 
   [ROUTES.JOIN_SQUAD]: {
-    title: "Join the Squad - Sign Up",
-    description:
-      "Become part of the movement. Create your FalseNine account and join the squad today.",
-    keywords: ["signup", "register", "join", "create account", "squad"],
+    title: "Join the Squad - Login",
+    description: "Log in to your FalseNine account and stay in motion.",
+    keywords: ["login", "sign in", "account", "authentication"],
     prefetchPriority: "medium",
   },
 

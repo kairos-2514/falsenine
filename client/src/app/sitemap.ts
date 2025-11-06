@@ -20,12 +20,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       priority: 0.9,
     },
     {
-      url: `${baseUrl}${ROUTES.TOUCHLINE}`,
-      lastModified: currentDate,
-      changeFrequency: "monthly",
-      priority: 0.7,
-    },
-    {
       url: `${baseUrl}${ROUTES.THE_PLAYBOOK}`,
       lastModified: currentDate,
       changeFrequency: "yearly",

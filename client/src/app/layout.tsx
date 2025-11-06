@@ -2,14 +2,14 @@ import type { Metadata } from "next";
 import "./globals.css";
 import { ROUTE_METADATA, socialLinks as SOCIAL_LINKS } from "@/lib/navigation";
 import { seoConfig } from "@/config/seo-config";
-// Dynamic metadata generation based on route metadata from navigation.ts
+
+// ui elements
+import Footer from "@/ui/footer";
+
 export const metadata: Metadata = {
-  title: {
-    default: "FalseNine",
-    template: "%s | FalseNine",
-  },
+  title: "FalseNine",
   description:
-    "FalseNine is a premium streetwear label inspired by football culture. Born from the game, built for the streets — crafted for players, creators, and rule-breakers who move different.",
+    "Premium football-inspired streetwear. Born from the game, built for the streets.",
   keywords: [
     "FalseNine",
     "football streetwear",
@@ -27,19 +27,19 @@ export const metadata: Metadata = {
     siteName: "FalseNine",
     title: "FalseNine",
     description:
-      "Premium football-inspired streetwear brand redefining sports fashion. Born from the game, built for the streets.",
+      "Premium football-inspired streetwear. Born from the game, built for the streets.",
     images: [
       {
         url: "/falsenine-logo.jpg",
         width: 1200,
         height: 630,
-        alt: "FalseNine — Born from Football, Built for Streets",
+        alt: "FalseNine Logo",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "FalseNine — Born from Football, Built for Streets",
+    title: "FalseNine",
     description:
       "Premium football-inspired streetwear. For those who play different — on and off the pitch.",
     images: ["/falsenine-logo.jpg"],
@@ -61,14 +61,12 @@ export const metadata: Metadata = {
     icon: "/icon.svg",
     apple: "/apple-icon.png",
   },
-  // Additional metadata from navigation system
   authors: [{ name: "FalseNine", url: "https://falseninejersey.shop" }],
   creator: "FalseNine",
   publisher: "FalseNine",
   alternates: {
     canonical: "https://falseninejersey.shop",
   },
-  // Social media links from navigation.ts
   other: {
     "instagram:url": SOCIAL_LINKS.INSTAGRAM,
     "twitter:url": SOCIAL_LINKS.TWITTER,
@@ -115,7 +113,10 @@ export default function RootLayout({
           }}
         />
       </head>
-      <body className="antialiased">{children}</body>
+      <body className="antialiased">
+        {children}
+        <Footer />
+      </body>
     </html>
   );
 }

@@ -12,6 +12,7 @@ const NotFoundPage = () => {
           style={{
             fontFamily: "var(--font-montserrat), sans-serif",
             color: "var(--color-black)",
+            fontWeight: 500,
           }}
         >
           404
