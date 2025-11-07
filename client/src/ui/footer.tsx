@@ -2,7 +2,8 @@
 
 import Link from "next/link";
 import { memo } from "react";
-import { ROUTES, SOCIAL_LINKS } from "@/lib/navigation";
+// import { ROUTES, SOCIAL_LINKS } from "@/lib/navigation";
+import { SOCIAL_LINKS } from "@/lib/navigation";
 
 // ============================================================================
 // TYPES
@@ -23,14 +24,14 @@ interface FooterSection {
 // FOOTER DATA STRUCTURE
 // ============================================================================
 
-const FOOTER_NAVIGATION: FooterSection = {
-  links: [
-    { href: ROUTES.THE_PLAYBOOK, label: "The Play Book" },
-    { href: ROUTES.THE_CODE, label: "The Code" },
-    { href: ROUTES.ON_THE_MOVE, label: "On The Move" },
-    { href: ROUTES.REFUND_KICK, label: "Refund Kick" },
-  ],
-};
+// const FOOTER_NAVIGATION: FooterSection = {
+//   links: [
+//     { href: ROUTES.THE_PLAYBOOK, label: "The Play Book" },
+//     { href: ROUTES.THE_CODE, label: "The Code" },
+//     { href: ROUTES.ON_THE_MOVE, label: "On The Move" },
+//     { href: ROUTES.REFUND_KICK, label: "Refund Kick" },
+//   ],
+// };
 
 const SOCIAL_NAVIGATION: FooterSection = {
   links: [
@@ -39,7 +40,7 @@ const SOCIAL_NAVIGATION: FooterSection = {
     { href: SOCIAL_LINKS.PINTEREST, label: "Pinterest", external: true },
   ],
 };
- 
+
 // ============================================================================
 // SUB-COMPONENTS
 // ============================================================================
@@ -60,7 +61,7 @@ const FooterLink = memo<FooterLink>(({ href, label, external = false }) => {
     <Link
       href={href}
       {...linkProps}
-      className="font-montserrat text-sm uppercase tracking-wide text-iron transition-colors duration-300 hover:text-flame focus:text-flame focus:outline-none focus-visible:ring-2 focus-visible:ring-flame focus-visible:ring-offset-2 focus-visible:ring-offset-night"
+      className="smooth-hover font-montserrat text-sm uppercase tracking-wide text-iron hover:text-flame focus:text-flame focus:outline-none focus-visible:ring-2 focus-visible:ring-flame focus-visible:ring-offset-2 focus-visible:ring-offset-night"
     >
       {label}
     </Link>
@@ -173,9 +174,9 @@ const Footer = memo(() => {
         <BrandHeader />
 
         {/* Policy Navigation */}
-        <div className="mb-8">
+        {/* <div className="mb-8">
           <NavigationSection {...FOOTER_NAVIGATION} />
-        </div>
+        </div> */}
 
         {/* Social Media Links */}
         <div>

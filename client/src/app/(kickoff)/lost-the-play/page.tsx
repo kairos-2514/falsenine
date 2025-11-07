@@ -21,10 +21,10 @@ export default function LostThePlayPage() {
 
   return (
     <div>
-      <h1 className="mb-2 font-thunder text-5xl tracking-tight md:text-6xl">
-        Lost the Play
+      <h1 className="mb-2 font-montserrat text-3xl font-semibold tracking-tight">
+        Reset your password
       </h1>
-      <p className="mb-10 max-w-prose font-montserrat text-iron">
+      <p className="mb-8 max-w-prose font-montserrat text-sm text-night/60">
         Enter your email. We’ll send a reset link if there’s an account.
       </p>
 
@@ -52,12 +52,12 @@ export default function LostThePlayPage() {
       ) : (
         <form
           onSubmit={onSubmit}
-          className="space-y-6"
+          className="space-y-4"
           aria-label="Forgot password form"
         >
           <div className="space-y-2">
             <label
-              className="block font-montserrat text-sm text-iron"
+              className="block font-montserrat text-sm text-night/60"
               htmlFor="email"
             >
               Email
@@ -68,14 +68,14 @@ export default function LostThePlayPage() {
               required
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="w-full rounded-md bg-white/5 px-4 py-3 font-montserrat text-white outline-none ring-1 ring-white/10 transition focus:ring-white/30"
+              className="w-full rounded-md border border-night/10 bg-white px-4 py-3 font-montserrat text-night outline-none transition focus:border-night/30"
             />
           </div>
 
           <button
             type="submit"
             disabled={submitting}
-            className="w-full rounded-md bg-white px-5 py-3 font-montserrat text-night transition hover:bg-iron disabled:opacity-60"
+            className="w-full rounded-full bg-night px-5 py-3 font-montserrat text-white transition hover:bg-black disabled:opacity-60"
           >
             {submitting ? "Sending..." : "Send reset link"}
           </button>

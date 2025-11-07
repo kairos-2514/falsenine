@@ -4,6 +4,7 @@ import { ROUTE_METADATA, socialLinks as SOCIAL_LINKS } from "@/lib/navigation";
 import { seoConfig } from "@/config/seo-config";
 
 // ui elements
+import Navbar from "@/ui/navbar";
 import Footer from "@/ui/footer";
 
 export const metadata: Metadata = {
@@ -114,6 +115,7 @@ export default function RootLayout({
         />
       </head>
       <body className="antialiased">
+        <Navbar />
         {children}
         <Footer />
       </body>

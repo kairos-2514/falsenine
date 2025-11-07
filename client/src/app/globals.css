@@ -205,3 +205,8 @@
 .font-thunder {
   font-family: var(--font-thunder);
 }
+
+/* Smooth hover utilities */
+.smooth-hover {
+  transition: all 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+}

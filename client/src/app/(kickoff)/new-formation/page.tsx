@@ -24,11 +24,11 @@ export default function NewFormationPage() {
 
   return (
     <div>
-      <h1 className="mb-2 font-thunder text-5xl tracking-tight md:text-6xl">
-        New Formation
+      <h1 className="mb-2 font-montserrat text-3xl font-semibold tracking-tight">
+        Set a new password
       </h1>
-      <p className="mb-10 max-w-prose font-montserrat text-iron">
-        Set a fresh password. Keep it strong. Keep it yours.
+      <p className="mb-8 max-w-prose font-montserrat text-sm text-night/60">
+        Keep it strong. Keep it yours.
       </p>
 
       {done ? (
@@ -48,7 +48,7 @@ export default function NewFormationPage() {
       ) : (
         <form
           onSubmit={onSubmit}
-          className="space-y-6"
+          className="space-y-4"
           aria-label="Reset password form"
         >
           {token ? (
@@ -64,7 +64,7 @@ export default function NewFormationPage() {
 
           <div className="space-y-2">
             <label
-              className="block font-montserrat text-sm text-iron"
+              className="block font-montserrat text-sm text-night/60"
               htmlFor="password"
             >
               New password
@@ -77,13 +77,13 @@ export default function NewFormationPage() {
               onChange={(e) =>
                 setFormState({ ...formState, password: e.target.value })
               }
-              className="w-full rounded-md bg-white/5 px-4 py-3 font-montserrat text-white outline-none ring-1 ring-white/10 transition focus:ring-white/30"
+              className="w-full rounded-md border border-night/10 bg-white px-4 py-3 font-montserrat text-night outline-none transition focus:border-night/30"
             />
           </div>
 
           <div className="space-y-2">
             <label
-              className="block font-montserrat text-sm text-iron"
+              className="block font-montserrat text-sm text-night/60"
               htmlFor="confirm"
             >
               Confirm new password
@@ -96,14 +96,14 @@ export default function NewFormationPage() {
               onChange={(e) =>
                 setFormState({ ...formState, confirm: e.target.value })
               }
-              className="w-full rounded-md bg-white/5 px-4 py-3 font-montserrat text-white outline-none ring-1 ring-white/10 transition focus:ring-white/30"
+              className="w-full rounded-md border border-night/10 bgwhite px-4 py-3 font-montserrat text-night outline-none transition focus:border-night/30"
             />
           </div>
 
           <button
             type="submit"
             disabled={submitting}
-            className="w-full rounded-md bg-white px-5 py-3 font-montserrat text-night transition hover:bg-iron disabled:opacity-60"
+            className="w-full rounded-full bg-night px-5 py-3 font-montserrat text-white transition hover:bg-black disabled:opacity-60"
           >
             {submitting ? "Saving..." : "Save new password"}
           </button>
