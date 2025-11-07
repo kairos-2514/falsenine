@@ -64,12 +64,6 @@ export const ROUTES = {
   THE_CODE: "/the-code", //privacy policy
   ON_THE_MOVE: "/on-the-move", //delivery policy
   REFUND_KICK: "/refund-kick", //refund n return policy
-
-  // Auth Routes (Nested under /kickoff folder)
-  ENTER_PITCH: "/enter-the-pitch",
-  JOIN_SQUAD: "/join-the-squad",
-  LOST_PLAY: "/lost-the-play",
-  NEW_FORMATION: "/new-formation",
 } as const;
 
 export type RouteKey = keyof typeof ROUTES;
@@ -230,38 +224,6 @@ export const ROUTE_METADATA: Record<string, RouteMetadata> = {
       "FalseNine returns",
       "money back",
     ],
-    prefetchPriority: "low",
-    lazy: true,
-  },
-
-  [ROUTES.ENTER_PITCH]: {
-    title: "Enter the Pitch - Sign Up",
-    description: "Create your FalseNine account and step onto the pitch.",
-    keywords: ["signup", "register", "create account", "join"],
-    prefetchPriority: "medium",
-  },
-
-  [ROUTES.JOIN_SQUAD]: {
-    title: "Join the Squad - Login",
-    description: "Log in to your FalseNine account and stay in motion.",
-    keywords: ["login", "sign in", "account", "authentication"],
-    prefetchPriority: "medium",
-  },
-
-  [ROUTES.LOST_PLAY]: {
-    title: "Lost the Play - Forgot Password",
-    description:
-      "Missed your move? Recover your access and get back in the game.",
-    keywords: ["forgot password", "account recovery", "reset", "password"],
-    prefetchPriority: "low",
-    lazy: true,
-  },
-
-  [ROUTES.NEW_FORMATION]: {
-    title: "New Formation - Reset Password",
-    description:
-      "Change your setup. Create a new password and secure your account.",
-    keywords: ["reset password", "new password", "change password", "security"],
     prefetchPriority: "low",
     lazy: true,
   },
