@@ -22,7 +22,7 @@ export default function BannerSection() {
       {/* Background Image */}
       <div className="absolute inset-0">
         <Image
-          src="/images/banner-section-image.png"
+          src="/images/banner-image.png"
           alt="Banner section background"
           fill
           className="object-cover"
@@ -65,4 +65,3 @@ export default function BannerSection() {
     </section>
   );
 }
-

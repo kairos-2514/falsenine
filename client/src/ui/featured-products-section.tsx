@@ -60,7 +60,7 @@ export default function FeaturedProductsSection() {
           {/* Image */}
           <div className="relative min-h-[70vh] md:min-h-[80vh] lg:min-h-[90vh]">
             <Image
-              src="/images/featured-product-left-side-image.png"
+              src="/images/left-side-image.png"
               alt="Featured product left"
               fill
               className="object-cover"
@@ -74,7 +74,7 @@ export default function FeaturedProductsSection() {
           {/* Image */}
           <div className="relative min-h-[70vh] bg-iron md:min-h-[80vh] lg:min-h-[90vh]">
             <Image
-              src="/images/featured-product-right-side-image.png"
+              src="/images/right-side-image.png"
               alt="Featured product right"
               fill
               className="object-cover"
