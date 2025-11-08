@@ -1,8 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { useNavigation, ROUTES } from "@/lib/navigation";
-import { seoConfig } from "@/config/seo-config";
+import { useNavigation } from "@/lib/navigation";
 import { mockProducts } from "@/lib/products";
 import { Product } from "@/types/product";
 import { IMAGES } from "@/config/images";
@@ -50,7 +49,26 @@ const ProductCard = ({ product }: { product: Product }) => {
 };
 
 export default function DripRoomPage() {
-  const pageMetadata = seoConfig.getPageMetadata(ROUTES.DRIP_ROOM);
+  const pageDescription =
+    "Explore our latest drops — premium football-inspired streetwear designed for players who move different.";
+
+  // Generate structured data - using constants directly to avoid client/server mismatch
+  const collectionSchema = {
+    "@context": "https://schema.org",
+    "@type": "CollectionPage",
+    name: "Drip Room - FalseNine",
+    description: pageDescription,
+    url: "https://falseninejersey.shop/drip-room",
+    isPartOf: {
+      "@type": "WebSite",
+      name: "FalseNine",
+      url: "https://falseninejersey.shop",
+    },
+    mainEntity: {
+      "@type": "ItemList",
+      numberOfItems: mockProducts.length,
+    },
+  };
 
   return (
     <>
@@ -58,14 +76,7 @@ export default function DripRoomPage() {
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
-          __html: JSON.stringify(
-            seoConfig.createCollectionSchema({
-              name: "Drip Room - FalseNine",
-              description: pageMetadata.description,
-              itemCount: mockProducts.length,
-              url: seoConfig.getCanonicalUrl(ROUTES.DRIP_ROOM),
-            })
-          ),
+          __html: JSON.stringify(collectionSchema),
         }}
       />
 
@@ -93,7 +104,7 @@ export default function DripRoomPage() {
                 ROOM
               </h1>
               <p className="mt-6 max-w-lg font-montserrat text-sm font-normal uppercase tracking-wide text-white/90 sm:text-base md:mt-8 md:text-lg">
-                {pageMetadata.description}
+                {pageDescription}
               </p>
             </div>
           </div>

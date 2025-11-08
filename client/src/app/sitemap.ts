@@ -45,24 +45,5 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     },
   ];
 
-  // TODO: Add dynamic product routes when you have product data
-  // Uncomment and modify this section when ready:
-  /*
-  try {
-    const products = await fetchProducts(); // Your product fetching function
-    const productRoutes: MetadataRoute.Sitemap = products.map((product) => ({
-      url: `${baseUrl}${ROUTES.DRIP_ROOM}/${product.slug}`,
-      lastModified: product.updatedAt ? new Date(product.updatedAt) : currentDate,
-      changeFrequency: "weekly",
-      priority: 0.8,
-    }));
-    
-    return [...staticRoutes, ...productRoutes];
-  } catch (error) {
-    console.error("[Sitemap] Error fetching products:", error);
-    return staticRoutes;
-  }
-  */
-
   return staticRoutes;
 }

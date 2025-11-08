@@ -1,9 +1,84 @@
 "use client";
 
+import { useState, FormEvent } from "react";
 import Image from "next/image";
 import { IMAGES } from "@/config/images";
+import { sendContactMessage } from "@/api/contact";
+import { ApiError } from "@/api/config";
 
 export default function ContactSection() {
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    message: "",
+  });
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState(false);
+
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+    // Clear error when user starts typing
+    if (error) setError(null);
+    if (success) setSuccess(false);
+  };
+
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setError(null);
+    setSuccess(false);
+
+    // Client-side validation
+    if (!formData.name.trim() || !formData.email.trim() || !formData.message.trim()) {
+      setError("Please fill in all fields");
+      return;
+    }
+
+    // Email validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(formData.email)) {
+      setError("Please enter a valid email address");
+      return;
+    }
+
+    setIsSubmitting(true);
+
+    try {
+      await sendContactMessage({
+        name: formData.name,
+        email: formData.email,
+        message: formData.message,
+      });
+
+      // Success
+      setSuccess(true);
+      setFormData({ name: "", email: "", message: "" });
+
+      // Clear success message after 5 seconds
+      setTimeout(() => {
+        setSuccess(false);
+      }, 5000);
+    } catch (err) {
+      if (err instanceof ApiError) {
+        setError(err.message);
+      } else {
+        setError(
+          err instanceof Error
+            ? err.message
+            : "Failed to send message. Please try again later."
+        );
+      }
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   return (
     <section className="grid min-h-[calc(100vh-196px)] grid-cols-1 md:grid-cols-2">
       {/* Image Column */}
@@ -35,15 +110,37 @@ export default function ContactSection() {
           </div>
 
           {/* Form Section */}
-          <form className="px-4 sm:px-6 md:px-8 lg:px-16 xl:px-20">
+          <form
+            onSubmit={handleSubmit}
+            className="px-4 sm:px-6 md:px-8 lg:px-16 xl:px-20"
+          >
             <div className="space-y-4 sm:space-y-6">
+              {/* Error Message */}
+              {error && (
+                <div className="rounded bg-red-50 p-3 font-montserrat text-xs text-red-600 sm:text-sm">
+                  {error}
+                </div>
+              )}
+
+              {/* Success Message */}
+              {success && (
+                <div className="rounded bg-green-50 p-3 font-montserrat text-xs text-green-600 sm:text-sm">
+                  Message sent successfully! We&apos;ll get back to you soon.
+                </div>
+              )}
+
               <label className="block">
                 <span className="font-montserrat text-[10px] font-normal uppercase tracking-[0.3em] text-night/50 sm:text-xs">
                   Name..?
                 </span>
                 <input
                   type="text"
-                  className="mt-1.5 w-full border-b border-night/50 bg-transparent pb-2 font-montserrat text-xs font-normal uppercase tracking-[0.2em] text-night outline-none transition-colors focus:border-night sm:mt-2 sm:text-sm md:text-base"
+                  name="name"
+                  value={formData.name}
+                  onChange={handleChange}
+                  required
+                  disabled={isSubmitting}
+                  className="mt-1.5 w-full border-b border-night/50 bg-transparent pb-2 font-montserrat text-xs font-normal uppercase tracking-[0.2em] text-night outline-none transition-colors focus:border-night disabled:opacity-50 sm:mt-2 sm:text-sm md:text-base"
                 />
               </label>
 
@@ -53,7 +150,12 @@ export default function ContactSection() {
                 </span>
                 <input
                   type="email"
-                  className="mt-1.5 w-full border-b border-night/50 bg-transparent pb-2 font-montserrat text-xs font-normal uppercase tracking-[0.2em] text-night outline-none transition-colors focus:border-night sm:mt-2 sm:text-sm md:text-base"
+                  name="email"
+                  value={formData.email}
+                  onChange={handleChange}
+                  required
+                  disabled={isSubmitting}
+                  className="mt-1.5 w-full border-b border-night/50 bg-transparent pb-2 font-montserrat text-xs font-normal uppercase tracking-[0.2em] text-night outline-none transition-colors focus:border-night disabled:opacity-50 sm:mt-2 sm:text-sm md:text-base"
                 />
               </label>
 
@@ -62,16 +164,22 @@ export default function ContactSection() {
                   Message..?
                 </span>
                 <textarea
+                  name="message"
+                  value={formData.message}
+                  onChange={handleChange}
+                  required
+                  disabled={isSubmitting}
                   rows={4}
-                  className="mt-1.5 w-full resize-none border-b border-night/50 bg-transparent pb-2 font-montserrat text-xs font-normal uppercase tracking-[0.2em] text-night outline-none transition-colors focus:border-night sm:mt-2 sm:text-sm md:text-base"
+                  className="mt-1.5 w-full resize-none border-b border-night/50 bg-transparent pb-2 font-montserrat text-xs font-normal uppercase tracking-[0.2em] text-night outline-none transition-colors focus:border-night disabled:opacity-50 sm:mt-2 sm:text-sm md:text-base"
                 />
               </label>
 
               <button
                 type="submit"
-                className="smooth-hover mt-4 inline-flex w-full items-center justify-center bg-night px-6 py-2.5 font-montserrat text-[10px] font-normal uppercase tracking-[0.3em] text-white hover:bg-night/90 active:scale-[0.98] sm:text-xs sm:w-auto md:px-8 md:py-3"
+                disabled={isSubmitting}
+                className="smooth-hover mt-4 inline-flex w-full items-center justify-center bg-night px-6 py-2.5 font-montserrat text-[10px] font-normal uppercase tracking-[0.3em] text-white hover:bg-night/90 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50 sm:text-xs sm:w-auto md:px-8 md:py-3"
               >
-                Send the Pass
+                {isSubmitting ? "Sending..." : "Send the Pass"}
               </button>
             </div>
           </form>
