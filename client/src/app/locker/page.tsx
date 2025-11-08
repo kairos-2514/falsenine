@@ -10,10 +10,21 @@ import {
   removeFromCart,
   updateCartItemQuantity,
 } from "@/lib/cart";
+import AuthForm from "@/ui/auth-form";
+import AddressForm from "@/ui/address-form";
+import { UserResponse } from "@/api/auth";
+import { saveUserData, getUserData, getUserId } from "@/lib/auth";
+import { getUserAddress, AddressResponse } from "@/api/address";
+
+type CheckoutStep = "cart" | "auth" | "address" | "address-confirm";
 
 export default function LockerPage() {
   const { navigateTo } = useNavigation();
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
+  const [checkoutStep, setCheckoutStep] = useState<CheckoutStep>("cart");
+  const [currentUser, setCurrentUser] = useState<UserResponse | null>(null);
+  const [savedAddress, setSavedAddress] = useState<AddressResponse | null>(null);
+  const [loadingAddress, setLoadingAddress] = useState(false);
 
   // Load cart items on mount and listen for updates
   useEffect(() => {
@@ -27,6 +38,52 @@ export default function LockerPage() {
     window.addEventListener("cartUpdated", loadCart);
     return () => window.removeEventListener("cartUpdated", loadCart);
   }, []);
+
+  // Load user data if logged in
+  useEffect(() => {
+    const userData = getUserData();
+    if (userData) {
+      setCurrentUser(userData);
+    }
+  }, []);
+
+  // Handle proceed to checkout
+  const handleProceedToCheckout = async () => {
+    const userId = getUserId();
+    
+    if (!userId) {
+      // Not logged in - show auth form
+      setCheckoutStep("auth");
+      return;
+    }
+
+    // User is logged in - check for address
+    setLoadingAddress(true);
+    try {
+      const addressResponse = await getUserAddress(userId);
+      if (addressResponse.data) {
+        // User has address - show confirmation
+        setSavedAddress(addressResponse.data);
+        setCheckoutStep("address-confirm");
+      } else {
+        // User doesn't have address - show address form
+        const userData = getUserData();
+        if (userData) {
+          setCurrentUser(userData);
+        }
+        setCheckoutStep("address");
+      }
+    } catch {
+      // Address not found or error - show address form
+      const userData = getUserData();
+      if (userData) {
+        setCurrentUser(userData);
+      }
+      setCheckoutStep("address");
+    } finally {
+      setLoadingAddress(false);
+    }
+  };
 
   const handleRemoveItem = (itemId: string, selectedSize: string) => {
     removeFromCart(itemId, selectedSize);
@@ -153,9 +210,148 @@ export default function LockerPage() {
           </p>
         </div>
 
+        {/* Checkout Flow */}
+        {checkoutStep === "auth" && (
+          <section className="px-4 py-8 sm:px-6 sm:py-12 md:px-8 md:py-16 lg:px-16 lg:py-20">
+            <AuthForm
+              onSuccess={(user) => {
+                // Save user data to localStorage for persistent login
+                saveUserData(user);
+                setCurrentUser(user);
+                setCheckoutStep("address");
+              }}
+              onCancel={() => setCheckoutStep("cart")}
+            />
+          </section>
+        )}
+
+        {/* Address Confirmation - User has address */}
+        {checkoutStep === "address-confirm" && savedAddress && (
+          <section className="px-4 py-8 sm:px-6 sm:py-12 md:px-8 md:py-16 lg:px-16 lg:py-20">
+            <div className="mx-auto max-w-2xl">
+              <h2 className="font-thunder text-2xl font-extralight uppercase leading-[0.85] tracking-tight text-night sm:text-3xl md:text-4xl">
+                SHIPPING ADDRESS
+              </h2>
+              <p className="mt-2 font-montserrat text-xs font-normal uppercase tracking-[0.2em] text-night/60 sm:text-sm">
+                Is this the address you want to use?
+              </p>
+
+              <div className="mt-8 space-y-4 border border-night/10 bg-white p-6 sm:p-8">
+                <div>
+                  <p className="font-montserrat text-[10px] font-normal uppercase tracking-[0.3em] text-night/50 sm:text-xs">
+                    Full Name
+                  </p>
+                  <p className="mt-1.5 font-montserrat text-xs font-normal uppercase tracking-[0.2em] text-night sm:text-sm md:text-base">
+                    {savedAddress.fullName}
+                  </p>
+                </div>
+                <div>
+                  <p className="font-montserrat text-[10px] font-normal uppercase tracking-[0.3em] text-night/50 sm:text-xs">
+                    Phone Number
+                  </p>
+                  <p className="mt-1.5 font-montserrat text-xs font-normal uppercase tracking-[0.2em] text-night sm:text-sm md:text-base">
+                    {savedAddress.phoneNumber}
+                  </p>
+                </div>
+                <div>
+                  <p className="font-montserrat text-[10px] font-normal uppercase tracking-[0.3em] text-night/50 sm:text-xs">
+                    Address
+                  </p>
+                  <p className="mt-1.5 font-montserrat text-xs font-normal uppercase tracking-[0.2em] text-night sm:text-sm md:text-base">
+                    {savedAddress.addressLine1}
+                    {savedAddress.addressLine2 && `, ${savedAddress.addressLine2}`}
+                  </p>
+                </div>
+                <div>
+                  <p className="font-montserrat text-[10px] font-normal uppercase tracking-[0.3em] text-night/50 sm:text-xs">
+                    City, State, Pin Code
+                  </p>
+                  <p className="mt-1.5 font-montserrat text-xs font-normal uppercase tracking-[0.2em] text-night sm:text-sm md:text-base">
+                    {savedAddress.city}, {savedAddress.state} {savedAddress.pinCode}
+                  </p>
+                </div>
+                <div>
+                  <p className="font-montserrat text-[10px] font-normal uppercase tracking-[0.3em] text-night/50 sm:text-xs">
+                    Country
+                  </p>
+                  <p className="mt-1.5 font-montserrat text-xs font-normal uppercase tracking-[0.2em] text-night sm:text-sm md:text-base">
+                    {savedAddress.country}
+                  </p>
+                </div>
+              </div>
+
+              <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:gap-4">
+                <button
+                  onClick={() => {
+                    // TODO: Proceed to payment/order confirmation
+                    alert("Order confirmation coming soon...");
+                    setCheckoutStep("cart");
+                  }}
+                  className="smooth-hover inline-flex w-full items-center justify-center bg-night px-6 py-2.5 font-montserrat text-[10px] font-normal uppercase tracking-[0.3em] text-white hover:bg-night/90 active:scale-[0.98] sm:w-auto sm:text-xs md:px-8 md:py-3"
+                >
+                  USE THIS ADDRESS
+                </button>
+                <button
+                  onClick={() => {
+                    if (currentUser) {
+                      setCheckoutStep("address");
+                    } else {
+                      setCheckoutStep("auth");
+                    }
+                  }}
+                  className="smooth-hover inline-flex w-full items-center justify-center border border-night/30 bg-white px-6 py-2.5 font-montserrat text-[10px] font-normal uppercase tracking-[0.3em] text-night transition-colors hover:border-night sm:w-auto sm:text-xs md:px-8 md:py-3"
+                >
+                  EDIT ADDRESS
+                </button>
+                <button
+                  onClick={() => setCheckoutStep("cart")}
+                  className="smooth-hover inline-flex w-full items-center justify-center border border-night/30 bg-white px-6 py-2.5 font-montserrat text-[10px] font-normal uppercase tracking-[0.3em] text-night transition-colors hover:border-night sm:w-auto sm:text-xs md:px-8 md:py-3"
+                >
+                  CANCEL
+                </button>
+              </div>
+            </div>
+          </section>
+        )}
+
+        {/* Address Form - User needs to fill address */}
+        {checkoutStep === "address" && currentUser && (
+          <section className="px-4 py-8 sm:px-6 sm:py-12 md:px-8 md:py-16 lg:px-16 lg:py-20">
+            <AddressForm
+              userId={currentUser.userId}
+              onSuccess={async () => {
+                // Address saved successfully - reload and show confirmation
+                try {
+                  const addressResponse = await getUserAddress(currentUser.userId);
+                  if (addressResponse.data) {
+                    setSavedAddress(addressResponse.data);
+                    setCheckoutStep("address-confirm");
+                  } else {
+                    // TODO: Proceed to payment/order confirmation
+                    alert("Address saved! Order confirmation coming soon...");
+                    setCheckoutStep("cart");
+                  }
+                } catch {
+                  // TODO: Proceed to payment/order confirmation
+                  alert("Address saved! Order confirmation coming soon...");
+                  setCheckoutStep("cart");
+                }
+              }}
+              onCancel={() => {
+                if (currentUser) {
+                  setCheckoutStep("cart");
+                } else {
+                  setCheckoutStep("auth");
+                }
+              }}
+            />
+          </section>
+        )}
+
         {/* Cart Content */}
-        <section className="px-4 py-8 sm:px-6 sm:py-12 md:px-8 md:py-16 lg:px-16 lg:py-20">
-          {cartItems.length === 0 ? (
+        {checkoutStep === "cart" && (
+          <section className="px-4 py-8 sm:px-6 sm:py-12 md:px-8 md:py-16 lg:px-16 lg:py-20">
+            {cartItems.length === 0 ? (
             /* Empty Cart */
             <div className="flex min-h-[50vh] flex-col items-center justify-center space-y-6 text-center">
               <h2 className="font-thunder text-3xl font-extralight uppercase tracking-tight text-night sm:text-4xl md:text-5xl">
@@ -206,8 +402,12 @@ export default function LockerPage() {
                   </div>
                 </div>
 
-                <button className="smooth-hover w-full bg-night px-6 py-4 font-montserrat text-xs font-normal uppercase tracking-[0.3em] text-white transition-opacity hover:opacity-90 active:scale-[0.98] sm:text-sm md:px-8 md:py-5">
-                  PROCEED TO CHECKOUT
+                <button
+                  onClick={handleProceedToCheckout}
+                  disabled={loadingAddress}
+                  className="smooth-hover w-full bg-night px-6 py-4 font-montserrat text-xs font-normal uppercase tracking-[0.3em] text-white transition-opacity hover:opacity-90 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50 sm:text-sm md:px-8 md:py-5"
+                >
+                  {loadingAddress ? "LOADING..." : "PROCEED TO CHECKOUT"}
                 </button>
 
                 <button
@@ -219,7 +419,8 @@ export default function LockerPage() {
               </div>
             </div>
           )}
-        </section>
+          </section>
+        )}
       </main>
     </>
   );
