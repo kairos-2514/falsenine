@@ -1,14 +1,20 @@
 export interface Product {
-  PK: string; // e.g. "PRODUCT#prod001"
-  SK: string; // e.g. "DETAILS"
+  PK: string; // e.g. "PRODUCT#crossfade"
+  SK: string; // e.g. "METADATA"
   type: "PRODUCT";
-  productId: string;
-  name: string;
-  description: string;
-  price: number;
-  category: string;
-  stock: number;
-  imageUrl?: string;
+  id: string; // e.g. "crossfade"
+  pName: string;
+  pPrice: number;
+  pDescription: string;
+  pSizes: string[];
+  pCategory: string;
+  pFit: string;
+  image: string;
+  stock: {
+    [size: string]: number; // e.g. { "S": 5, "M": 5, "L": 5, "XL": 5 }
+  };
+  isActive: boolean;
   createdAt: string;
   updatedAt?: string;
+  category?: string;
 }
