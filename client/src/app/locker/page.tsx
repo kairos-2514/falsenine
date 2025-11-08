@@ -90,12 +90,33 @@ export default function LockerPage() {
     setCartItems(getCartItems());
   };
 
-  const handleUpdateQuantity = (
+  const handleUpdateQuantity = async (
     itemId: string,
     selectedSize: string,
     newQuantity: number
   ) => {
-    updateCartItemQuantity(itemId, selectedSize, newQuantity);
+    // Fetch product to get stock information
+    try {
+      const { getProductById } = await import("@/api/product");
+      const productResponse = await getProductById(itemId);
+      if (productResponse.success && productResponse.data) {
+        const result = updateCartItemQuantity(
+          itemId,
+          selectedSize,
+          newQuantity,
+          productResponse.data
+        );
+        if (!result.success) {
+          alert(result.error);
+        }
+      } else {
+        // Fallback if product fetch fails
+        updateCartItemQuantity(itemId, selectedSize, newQuantity);
+      }
+    } catch {
+      // Fallback if product fetch fails
+      updateCartItemQuantity(itemId, selectedSize, newQuantity);
+    }
     setCartItems(getCartItems());
   };
 
@@ -111,13 +132,22 @@ export default function LockerPage() {
       <div className="grid grid-cols-1 gap-4 border-b border-night/10 pb-6 sm:grid-cols-[200px_1fr] md:grid-cols-[250px_1fr]">
         {/* Image */}
         <div className="relative aspect-[3/4] w-full overflow-hidden bg-iron sm:w-full">
-          <Image
-            src={item.image}
-            alt={item.pName}
-            fill
-            className="object-cover"
-            quality={100}
-          />
+          {item.image ? (
+            <Image
+              src={item.image}
+              alt={item.pName}
+              fill
+              className="object-cover"
+              quality={100}
+              onError={() => {
+                console.error(`Failed to load image for cart item ${item.id}:`, item.image);
+              }}
+            />
+          ) : (
+            <div className="flex h-full w-full items-center justify-center bg-iron text-night/30">
+              <p className="font-montserrat text-xs uppercase">No Image</p>
+            </div>
+          )}
         </div>
 
         {/* Item Details */}

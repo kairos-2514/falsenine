@@ -11,6 +11,9 @@ export interface Product {
   pCategory: string;
   pFit: string;
   image: string;
+  stock?: {
+    [size: string]: number;
+  };
 }
 
 export interface CartItem extends Product {

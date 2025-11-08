@@ -1,11 +1,12 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Image from "next/image";
 import { useParams } from "next/navigation";
 import { useNavigation, ROUTES } from "@/lib/navigation";
-import { getProductById } from "@/lib/products";
-
+import { getProductById as getProductByIdAPI } from "@/api/product";
+import { Product } from "@/types/product";
+import { ApiError } from "@/api/config";
 import { addToCart } from "@/lib/cart";
 
 // Product Detail Component
@@ -14,17 +15,61 @@ export default function ProductDetailPage() {
   const { navigateTo, goBack } = useNavigation();
   const productId = params?.id as string;
 
+  const [product, setProduct] = useState<Product | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [selectedSize, setSelectedSize] = useState<string>("");
   const [quantity, setQuantity] = useState<number>(1);
 
-  const product = productId ? getProductById(productId) : undefined;
+  useEffect(() => {
+    const loadProduct = async () => {
+      if (!productId) {
+        setError("Product ID is required");
+        setLoading(false);
+        return;
+      }
 
-  if (!product) {
+      try {
+        setLoading(true);
+        setError(null);
+        const response = await getProductByIdAPI(productId);
+        if (response.success && response.data) {
+          setProduct(response.data);
+        } else {
+          setError(response.error || "Product not found");
+        }
+      } catch (err) {
+        if (err instanceof ApiError) {
+          setError(err.message);
+        } else {
+          setError("Failed to load product");
+        }
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadProduct();
+  }, [productId]);
+
+  if (loading) {
+    return (
+      <main className="flex min-h-screen items-center justify-center bg-white px-4">
+        <div className="text-center">
+          <p className="font-montserrat text-sm uppercase tracking-wide text-night/60">
+            Loading product...
+          </p>
+        </div>
+      </main>
+    );
+  }
+
+  if (error || !product) {
     return (
       <main className="flex min-h-screen items-center justify-center bg-white px-4">
         <div className="text-center">
           <h1 className="font-thunder text-4xl font-extralight uppercase tracking-tight text-night sm:text-5xl md:text-6xl">
-            PRODUCT NOT FOUND
+            {error || "PRODUCT NOT FOUND"}
           </h1>
           <button
             onClick={() => navigateTo(ROUTES.DRIP_ROOM)}
@@ -37,6 +82,11 @@ export default function ProductDetailPage() {
     );
   }
 
+  const getAvailableStock = (size: string): number => {
+    if (!product?.stock) return 999;
+    return product.stock[size] || 0;
+  };
+
   const handleAddToCart = () => {
     if (!selectedSize) {
       alert("Please select a size");
@@ -44,12 +94,27 @@ export default function ProductDetailPage() {
     }
     if (!product) return;
 
-    addToCart(product, selectedSize, quantity);
+    const result = addToCart(product, selectedSize, quantity);
+    if (!result.success) {
+      alert(result.error);
+      return;
+    }
     navigateTo(ROUTES.LOCKER);
   };
 
   const handleIncrement = () => {
-    setQuantity((prev) => prev + 1);
+    if (!selectedSize) {
+      alert("Please select a size first");
+      return;
+    }
+    const availableStock = getAvailableStock(selectedSize);
+    setQuantity((prev) => {
+      if (prev >= availableStock) {
+        alert(`Only ${availableStock} available in stock`);
+        return prev;
+      }
+      return prev + 1;
+    });
   };
 
   const handleDecrement = () => {
@@ -99,7 +164,7 @@ export default function ProductDetailPage() {
               className="object-cover object-top"
               priority
               quality={90}
-              unoptimized
+              unoptimized={product.image.includes("s3.ap-south-1.amazonaws.com")}
               fetchPriority="high"
               decoding="sync"
               loading="eager"
@@ -149,20 +214,38 @@ export default function ProductDetailPage() {
                 SELECT SIZE
               </p>
               <div className="flex flex-wrap gap-3">
-                {product.pSizes.map((size) => (
-                  <button
-                    key={size}
-                    onClick={() => setSelectedSize(size)}
-                    className={`smooth-hover px-4 py-2 font-montserrat text-xs font-normal uppercase tracking-wide transition-all sm:text-sm ${
-                      selectedSize === size
-                        ? "border-2 border-flame bg-flame text-white"
-                        : "border border-night/30 bg-white text-night hover:border-night"
-                    }`}
-                  >
-                    {size}
-                  </button>
-                ))}
+                {product.pSizes.map((size) => {
+                  const stock = product.stock?.[size] || 0;
+                  const isOutOfStock = stock === 0;
+                  return (
+                    <button
+                      key={size}
+                      onClick={() => {
+                        if (!isOutOfStock) {
+                          setSelectedSize(size);
+                          // Reset quantity to 1 when size changes
+                          setQuantity(1);
+                        }
+                      }}
+                      disabled={isOutOfStock}
+                      className={`smooth-hover px-4 py-2 font-montserrat text-xs font-normal uppercase tracking-wide transition-all sm:text-sm ${
+                        isOutOfStock
+                          ? "border border-night/10 bg-night/5 text-night/30 cursor-not-allowed"
+                          : selectedSize === size
+                          ? "border-2 border-flame bg-flame text-white"
+                          : "border border-night/30 bg-white text-night hover:border-night"
+                      }`}
+                    >
+                      {size} {isOutOfStock && "(Out of Stock)"}
+                    </button>
+                  );
+                })}
               </div>
+              {selectedSize && product.stock && (
+                <p className="font-montserrat text-xs font-normal uppercase tracking-wide text-night/60 sm:text-sm">
+                  {product.stock[selectedSize] || 0} available in stock
+                </p>
+              )}
             </div>
 
             {/* Quantity Selection */}
@@ -182,11 +265,17 @@ export default function ProductDetailPage() {
                 </span>
                 <button
                   onClick={handleIncrement}
-                  className="flex h-10 w-10 items-center justify-center border border-night/30 bg-white font-montserrat text-sm font-normal text-night transition-colors hover:border-night"
+                  disabled={selectedSize ? quantity >= getAvailableStock(selectedSize) : false}
+                  className="flex h-10 w-10 items-center justify-center border border-night/30 bg-white font-montserrat text-sm font-normal text-night transition-colors hover:border-night disabled:cursor-not-allowed disabled:opacity-50"
                 >
                   +
                 </button>
               </div>
+              {selectedSize && product.stock && (
+                <p className="font-montserrat text-[10px] font-normal uppercase tracking-wide text-night/50 sm:text-xs">
+                  Max: {product.stock[selectedSize] || 0}
+                </p>
+              )}
             </div>
 
             {/* Add to Cart Button - 96px below quantity */}

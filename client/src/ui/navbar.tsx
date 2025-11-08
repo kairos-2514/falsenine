@@ -1,10 +1,9 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
-import { useState, useEffect } from "react";
+import { usePathname } from "next/navigation";
+import { useState } from "react";
 import { ROUTES, SOCIAL_LINKS } from "@/lib/navigation";
-import { isLoggedIn, clearUserData } from "@/lib/auth";
 
 // ============================================================================
 // NAVBAR COMPONENT
@@ -12,23 +11,7 @@ import { isLoggedIn, clearUserData } from "@/lib/auth";
 
 export default function Navbar() {
   const pathname = usePathname();
-  const router = useRouter();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [loggedIn, setLoggedIn] = useState(false);
-
-  useEffect(() => {
-    setLoggedIn(isLoggedIn());
-  }, [pathname]); // Re-check on route change
-
-  const handleLogout = () => {
-    clearUserData();
-    setLoggedIn(false);
-    if (pathname === ROUTES.PLAYER_CARD) {
-      router.push(ROUTES.PLAYER_CARD);
-    } else {
-      router.refresh();
-    }
-  };
 
   const mainNavLinks = [
     { label: "THE PLAY", href: ROUTES.THE_PLAY },
@@ -73,26 +56,17 @@ export default function Navbar() {
             })}
           </div>
 
-          {/* Player Card / Logout - Right (Desktop/Tablet) */}
-          {loggedIn ? (
-            <button
-              onClick={handleLogout}
-              className="smooth-hover font-montserrat hidden text-xs uppercase tracking-wider text-white/80 transition-opacity hover:text-white sm:text-sm md:block md:text-sm lg:text-base"
-            >
-              LOGOUT
-            </button>
-          ) : (
-            <Link
-              href={playerCardLink.href}
-              className={`smooth-hover font-montserrat hidden text-xs uppercase tracking-wider sm:text-sm md:block md:text-sm lg:text-base ${
-                pathname === playerCardLink.href
-                  ? "text-white"
-                  : "text-white/80 hover:text-white"
-              }`}
-            >
-              {playerCardLink.label}
-            </Link>
-          )}
+          {/* Player Card - Right (Desktop/Tablet) */}
+          <Link
+            href={playerCardLink.href}
+            className={`smooth-hover font-montserrat hidden text-xs uppercase tracking-wider sm:text-sm md:block md:text-sm lg:text-base ${
+              pathname === playerCardLink.href
+                ? "text-white"
+                : "text-white/80 hover:text-white"
+            }`}
+          >
+            {playerCardLink.label}
+          </Link>
 
           {/* Mobile Menu Button - Right (Mobile) */}
           <button
@@ -148,29 +122,17 @@ export default function Navbar() {
                   </Link>
                 );
               })}
-              {loggedIn ? (
-                <button
-                  onClick={() => {
-                    handleLogout();
-                    setIsMobileMenuOpen(false);
-                  }}
-                  className="smooth-hover font-montserrat text-sm uppercase tracking-wider text-white/80 transition-opacity hover:text-white"
-                >
-                  LOGOUT
-                </button>
-              ) : (
-                <Link
-                  href={playerCardLink.href}
-                  className={`smooth-hover font-montserrat text-sm uppercase tracking-wider ${
-                    pathname === playerCardLink.href
-                      ? "text-white"
-                      : "text-white/80 hover:text-white"
-                  }`}
-                  onClick={() => setIsMobileMenuOpen(false)}
-                >
-                  {playerCardLink.label}
-                </Link>
-              )}
+              <Link
+                href={playerCardLink.href}
+                className={`smooth-hover font-montserrat text-sm uppercase tracking-wider ${
+                  pathname === playerCardLink.href
+                    ? "text-white"
+                    : "text-white/80 hover:text-white"
+                }`}
+                onClick={() => setIsMobileMenuOpen(false)}
+              >
+                {playerCardLink.label}
+              </Link>
             </div>
           </div>
         )}

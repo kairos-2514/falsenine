@@ -36,4 +36,35 @@ export const IMAGES = {
   RIGHT_SIDE: getImageUrl(
     process.env.NEXT_PUBLIC_IMAGE_RIGHT_SIDE || "right-side-image.png"
   ),
+  // Product images - mapped by product ID
+  PRODUCT_FRONTLINE: getImageUrl(
+    process.env.NEXT_PUBLIC_IMAGE_PRODUCT_FRONTLINE ||
+      process.env.NEXT_PUBLIC_IMAGE_BANNER ||
+      "banner-image.png"
+  ),
+  PRODUCT_REIGN: getImageUrl(
+    process.env.NEXT_PUBLIC_IMAGE_PRODUCT_REIGN ||
+      process.env.NEXT_PUBLIC_IMAGE_RIGHT_SIDE ||
+      "right-side-image.png"
+  ),
+  PRODUCT_CROSSFADE: getImageUrl(
+    process.env.NEXT_PUBLIC_IMAGE_PRODUCT_CROSSFADE ||
+      process.env.NEXT_PUBLIC_IMAGE_LEFT_SIDE ||
+      "left-side-image.png"
+  ),
 } as const;
+
+/**
+ * Get product image by product ID
+ * @param productId - The product ID (e.g., "frontline", "reign", "crossfade")
+ * @returns Image URL for the product
+ */
+export const getProductImage = (productId: string): string => {
+  const productImageMap: Record<string, string> = {
+    frontline: IMAGES.PRODUCT_FRONTLINE,
+    reign: IMAGES.PRODUCT_REIGN,
+    crossfade: IMAGES.PRODUCT_CROSSFADE,
+  };
+
+  return productImageMap[productId.toLowerCase()] || IMAGES.BANNER;
+};

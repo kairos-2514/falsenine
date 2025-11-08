@@ -36,13 +36,49 @@ export const saveCartItems = (items: CartItem[]): void => {
 };
 
 /**
- * Add item to cart
+ * Get available stock for a product size
+ */
+export const getAvailableStock = (
+  product: Product,
+  size: string
+): number => {
+  if (!product.stock) return 999; // No stock limit if stock not available
+  return product.stock[size] || 0;
+};
+
+/**
+ * Get current cart quantity for a product size
+ */
+export const getCartQuantity = (
+  productId: string,
+  size: string
+): number => {
+  const cartItems = getCartItems();
+  const item = cartItems.find(
+    (item) => item.id === productId && item.selectedSize === size
+  );
+  return item ? item.quantity : 0;
+};
+
+/**
+ * Add item to cart with stock validation
  */
 export const addToCart = (
   product: Product,
   selectedSize: string,
   quantity: number = 1
-): void => {
+): { success: boolean; error?: string } => {
+  const availableStock = getAvailableStock(product, selectedSize);
+  const currentCartQuantity = getCartQuantity(product.id, selectedSize);
+  const requestedQuantity = currentCartQuantity + quantity;
+
+  if (requestedQuantity > availableStock) {
+    return {
+      success: false,
+      error: `Only ${availableStock} available in stock. You already have ${currentCartQuantity} in cart.`,
+    };
+  }
+
   const cartItems = getCartItems();
   
   // Check if item with same product and size already exists
@@ -64,6 +100,7 @@ export const addToCart = (
   }
 
   saveCartItems(cartItems);
+  return { success: true };
 };
 
 /**
@@ -78,16 +115,28 @@ export const removeFromCart = (itemId: string, selectedSize: string): void => {
 };
 
 /**
- * Update item quantity in cart
+ * Update item quantity in cart with stock validation
  */
 export const updateCartItemQuantity = (
   itemId: string,
   selectedSize: string,
-  quantity: number
-): void => {
+  quantity: number,
+  product?: Product
+): { success: boolean; error?: string } => {
   if (quantity < 1) {
     removeFromCart(itemId, selectedSize);
-    return;
+    return { success: true };
+  }
+
+  // Check stock if product is provided
+  if (product) {
+    const availableStock = getAvailableStock(product, selectedSize);
+    if (quantity > availableStock) {
+      return {
+        success: false,
+        error: `Only ${availableStock} available in stock.`,
+      };
+    }
   }
 
   const cartItems = getCartItems();
@@ -97,6 +146,7 @@ export const updateCartItemQuantity = (
       : item
   );
   saveCartItems(updated);
+  return { success: true };
 };
 
 /**

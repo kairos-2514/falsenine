@@ -1,10 +1,12 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import Image from "next/image";
 import { useNavigation } from "@/lib/navigation";
-import { mockProducts } from "@/lib/products";
+import { getAllProducts } from "@/api/product";
 import { Product } from "@/types/product";
 import { IMAGES } from "@/config/images";
+import { ApiError } from "@/api/config";
 
 // Product Card Component
 const ProductCard = ({ product }: { product: Product }) => {
@@ -28,7 +30,7 @@ const ProductCard = ({ product }: { product: Product }) => {
           className="object-cover transition-transform duration-500 group-hover:scale-105"
           loading="lazy"
           quality={85}
-          unoptimized
+          unoptimized={product.image.includes("s3.ap-south-1.amazonaws.com")}
         />
       </div>
 
@@ -54,7 +56,36 @@ export default function DripRoomPage() {
   const pageDescription =
     "Explore our latest drops — premium football-inspired streetwear designed for players who move different.";
 
-  // Generate structured data - using constants directly to avoid client/server mismatch
+  const [products, setProducts] = useState<Product[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const loadProducts = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+        const response = await getAllProducts();
+        if (response.success && response.data) {
+          setProducts(response.data);
+        } else {
+          setError(response.error || "Failed to load products");
+        }
+      } catch (err) {
+        if (err instanceof ApiError) {
+          setError(err.message);
+        } else {
+          setError("Failed to load products");
+        }
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadProducts();
+  }, []);
+
+  // Generate structured data
   const collectionSchema = {
     "@context": "https://schema.org",
     "@type": "CollectionPage",
@@ -68,7 +99,7 @@ export default function DripRoomPage() {
     },
     mainEntity: {
       "@type": "ItemList",
-      numberOfItems: mockProducts.length,
+      numberOfItems: products.length,
     },
   };
 
@@ -118,11 +149,37 @@ export default function DripRoomPage() {
 
         {/* Products Grid */}
         <section className="w-full px-4 py-8 md:px-8 md:py-16 lg:px-16 lg:py-20">
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-6 md:grid-cols-3 md:gap-8">
-            {mockProducts.map((product) => (
-              <ProductCard key={product.id} product={product} />
-            ))}
-          </div>
+          {loading ? (
+            <div className="flex min-h-[50vh] items-center justify-center">
+              <p className="font-montserrat text-sm uppercase tracking-wide text-night/60">
+                Loading products...
+              </p>
+            </div>
+          ) : error ? (
+            <div className="flex min-h-[50vh] flex-col items-center justify-center space-y-4 text-center">
+              <p className="font-montserrat text-sm font-normal uppercase tracking-wide text-red-600">
+                {error}
+              </p>
+              <button
+                onClick={() => window.location.reload()}
+                className="font-montserrat text-xs font-normal uppercase tracking-wide text-night/60 transition-opacity hover:opacity-80 sm:text-sm"
+              >
+                Retry
+              </button>
+            </div>
+          ) : products.length === 0 ? (
+            <div className="flex min-h-[50vh] items-center justify-center">
+              <p className="font-montserrat text-sm uppercase tracking-wide text-night/60">
+                No products available
+              </p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-6 md:grid-cols-3 md:gap-8">
+              {products.map((product) => (
+                <ProductCard key={product.id} product={product} />
+              ))}
+            </div>
+          )}
         </section>
       </main>
     </>
