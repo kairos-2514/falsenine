@@ -44,9 +44,9 @@ export default function FeaturedProductsSection() {
           <div className="bg-night text-white">
             <div className="p-4 sm:p-6 md:p-8 lg:p-12 xl:p-16">
               <div className="space-y-1.5 font-montserrat text-xs font-normal leading-relaxed uppercase tracking-wide sm:space-y-2 sm:text-sm md:text-base lg:text-lg">
-                <p>LOREM IPSUM DOLOR SIT AMET, CONSECTETUR</p>
-                <p>ADIPISCING ELIT, SED DO EIUSMOD TEMPOR</p>
-                <p>INCIDIDUNT UT LABORE ET DOLORE MAGNA ALIQUA.</p>
+                <p className="font-bold">CROSSFADE</p>
+                <p>Understated. Unstoppable.</p>
+                <p>Built for those who let their game do the talking.</p>
               </div>
               <button
                 onClick={handleCTAClick}
@@ -87,9 +87,9 @@ export default function FeaturedProductsSection() {
           <div className="bg-iron text-night">
             <div className="p-4 sm:p-6 md:p-8 lg:p-12 xl:p-16">
               <div className="space-y-1.5 font-montserrat text-xs font-normal leading-relaxed uppercase tracking-wide sm:space-y-2 sm:text-sm md:text-base lg:text-lg">
-                <p>LOREM IPSUM DOLOR SIT AMET, CONSECTETUR</p>
-                <p>ADIPISCING ELIT, SED DO EIUSMOD TEMPOR</p>
-                <p>INCIDIDUNT UT LABORE ET DOLORE MAGNA ALIQUA.</p>
+                <p className="font-bold">REIGN</p>
+                <p>Power. Precision. Presence.</p>
+                <p>For players who rule every moment on and off the pitch.</p>
               </div>
               <button
                 onClick={handleCTAClick}

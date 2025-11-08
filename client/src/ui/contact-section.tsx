@@ -28,9 +28,9 @@ export default function ContactSection() {
               <span className="text-flame">we&apos;re listening.</span>
             </p>
             <div className="mt-4 flex flex-wrap gap-3 font-montserrat font-bold text-[10px] uppercase tracking-[0.35em] text-night sm:mt-6 sm:gap-4 sm:text-xs md:text-sm">
-              <span>Keyword</span>
-              <span>Keyword</span>
-              <span>Keyword</span>
+              <span>DROP</span>
+              <span>PLAY</span>
+              <span>REPRESENT</span>
             </div>
           </div>
 
