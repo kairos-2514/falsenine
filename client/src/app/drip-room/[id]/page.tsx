@@ -3,9 +3,9 @@
 import { useState } from "react";
 import Image from "next/image";
 import { useParams } from "next/navigation";
-import { useNavigation, ROUTES, buildDripRoomRoute } from "@/lib/navigation";
+import { useNavigation, ROUTES } from "@/lib/navigation";
 import { getProductById } from "@/lib/products";
-import { seoConfig } from "@/config/seo-config";
+
 import { addToCart } from "@/lib/cart";
 
 // Product Detail Component
@@ -56,27 +56,24 @@ export default function ProductDetailPage() {
     setQuantity((prev) => (prev > 1 ? prev - 1 : 1));
   };
 
-  // Generate product schema using seoConfig
-  const productSchema = seoConfig.createProductSchema({
-    name: product.pName,
-    description: product.pDescription,
-    slug: product.id,
-    price: product.pPrice,
-    currency: "INR",
-    imageUrl: product.image,
-    brand: seoConfig.brand.siteName,
-    sku: product.id,
-    availability: "InStock",
-    url: seoConfig.getCanonicalUrl(buildDripRoomRoute(product.id)),
-  });
-
   return (
     <>
       {/* Structured Data */}
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
-          __html: JSON.stringify(productSchema),
+          __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "Product",
+            name: product.pName,
+            description: product.pDescription,
+            image: product.image,
+            offers: {
+              "@type": "Offer",
+              price: product.pPrice,
+              priceCurrency: "INR",
+            },
+          }),
         }}
       />
 

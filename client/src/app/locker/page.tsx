@@ -49,11 +49,6 @@ export default function LockerPage() {
     );
   };
 
-  const handleProceedToCheckout = () => {
-    // TODO: Navigate to checkout page or process order
-    console.log("Proceeding to checkout...");
-  };
-
   const CartItemCard = ({ item }: { item: CartItem }) => {
     return (
       <div className="grid grid-cols-1 gap-4 border-b border-night/10 pb-6 sm:grid-cols-[200px_1fr] md:grid-cols-[250px_1fr]">
@@ -211,10 +206,7 @@ export default function LockerPage() {
                   </div>
                 </div>
 
-                <button
-                  onClick={handleProceedToCheckout}
-                  className="smooth-hover w-full bg-night px-6 py-4 font-montserrat text-xs font-normal uppercase tracking-[0.3em] text-white transition-opacity hover:opacity-90 active:scale-[0.98] sm:text-sm md:px-8 md:py-5"
-                >
+                <button className="smooth-hover w-full bg-night px-6 py-4 font-montserrat text-xs font-normal uppercase tracking-[0.3em] text-white transition-opacity hover:opacity-90 active:scale-[0.98] sm:text-sm md:px-8 md:py-5">
                   PROCEED TO CHECKOUT
                 </button>
 

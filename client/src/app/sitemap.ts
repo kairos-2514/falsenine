@@ -1,24 +1,5 @@
 import type { MetadataRoute } from "next";
-import { mockProducts } from "@/lib/products";
-
-// Server-safe route constants (not importing from client-side navigation.ts)
-const ROUTES = {
-  DRIP_ROOM: "/drip-room",
-  DRIP_ROOM_DETAIL: "/drip-room/[id]",
-  THE_PLAYBOOK: "/the-playbook",
-  THE_CODE: "/the-code",
-  ON_THE_MOVE: "/on-the-move",
-  REFUND_KICK: "/refund-kick",
-} as const;
-
-// Server-side route builder (server-safe version)
-const buildProductRoute = (productId: string): string => {
-  if (!productId || typeof productId !== "string" || productId.trim() === "") {
-    throw new Error("[Sitemap] Invalid product ID");
-  }
-  // Replace [id] placeholder with actual product ID
-  return ROUTES.DRIP_ROOM_DETAIL.replace("[id]", encodeURIComponent(productId.trim()));
-};
+import { ROUTES } from "@/lib/navigation";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = "https://falseninejersey.shop";
@@ -64,21 +45,24 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     },
   ];
 
-  // Dynamic product routes
+  // TODO: Add dynamic product routes when you have product data
+  // Uncomment and modify this section when ready:
+  /*
   try {
-    const productRoutes: MetadataRoute.Sitemap = mockProducts.map((product) => {
-      const productPath = buildProductRoute(product.id);
-      return {
-        url: `${baseUrl}${productPath}`,
-        lastModified: currentDate,
-        changeFrequency: "weekly" as const,
-        priority: 0.8,
-      };
-    });
-
+    const products = await fetchProducts(); // Your product fetching function
+    const productRoutes: MetadataRoute.Sitemap = products.map((product) => ({
+      url: `${baseUrl}${ROUTES.DRIP_ROOM}/${product.slug}`,
+      lastModified: product.updatedAt ? new Date(product.updatedAt) : currentDate,
+      changeFrequency: "weekly",
+      priority: 0.8,
+    }));
+    
     return [...staticRoutes, ...productRoutes];
   } catch (error) {
-    console.error("[Sitemap] Error generating product routes:", error);
+    console.error("[Sitemap] Error fetching products:", error);
     return staticRoutes;
   }
+  */
+
+  return staticRoutes;
 }
