@@ -6,7 +6,7 @@ export default function ContactSection() {
   return (
     <section className="grid min-h-[calc(100vh-196px)] grid-cols-1 md:grid-cols-2">
       {/* Image Column */}
-      <div className="relative min-h-[40vh] sm:min-h-[50vh] md:min-h-[calc(100vh-196px)]">
+      <div className="relative min-h-[50vh] sm:min-h-[60vh] md:min-h-[calc(100vh-196px)]">
         <Image
           src="/images/contact-section-image.png"
           alt="Contact FalseNine"
@@ -19,15 +19,15 @@ export default function ContactSection() {
 
       {/* Form Column */}
       <div className="flex h-full flex-col bg-white text-night">
-        <div className="flex flex-1 flex-col justify-between">
+        <div className="flex flex-1 flex-col justify-between py-8 sm:py-10 md:py-12 lg:py-16">
           {/* Header Section */}
-          <div className="px-5 pt-6 sm:px-6 sm:pt-8 md:px-8 md:pt-10 lg:px-16 lg:pt-16">
-            <p className="max-w-md font-montserrat text-sm font-normal leading-relaxed uppercase tracking-[0.35em] text-night/60">
+          <div className="px-4 sm:px-6 md:px-8 lg:px-16 xl:px-20">
+            <p className="max-w-md font-montserrat text-xs font-normal leading-relaxed uppercase tracking-[0.35em] text-night/60 sm:text-sm md:text-base lg:text-lg">
               Your direct line to the squad. Questions, collabs, or just want to
               talk football —{" "}
               <span className="text-flame">we&apos;re listening.</span>
             </p>
-            <div className="mt-6 flex flex-wrap gap-4 font-montserrat font-bold text-xs uppercase tracking-[0.35em] text-night">
+            <div className="mt-4 flex flex-wrap gap-3 font-montserrat font-bold text-[10px] uppercase tracking-[0.35em] text-night sm:mt-6 sm:gap-4 sm:text-xs md:text-sm">
               <span>Keyword</span>
               <span>Keyword</span>
               <span>Keyword</span>
@@ -35,41 +35,41 @@ export default function ContactSection() {
           </div>
 
           {/* Form Section */}
-          <form className="px-5 pb-6 sm:px-6 sm:pb-8 md:px-8 md:pb-10 lg:px-16 lg:pb-16">
-            <div className="space-y-6">
+          <form className="px-4 sm:px-6 md:px-8 lg:px-16 xl:px-20">
+            <div className="space-y-4 sm:space-y-6">
               <label className="block">
-                <span className="font-montserrat text-xs font-normal uppercase tracking-[0.3em] text-night/50">
+                <span className="font-montserrat text-[10px] font-normal uppercase tracking-[0.3em] text-night/50 sm:text-xs">
                   Name..?
                 </span>
                 <input
                   type="text"
-                  className="mt-2 w-full border-b border-night/50 bg-transparent pb-2 font-montserrat text-sm font-normal uppercase tracking-[0.2em] text-night outline-none transition-colors focus:border-night"
+                  className="mt-1.5 w-full border-b border-night/50 bg-transparent pb-2 font-montserrat text-xs font-normal uppercase tracking-[0.2em] text-night outline-none transition-colors focus:border-night sm:mt-2 sm:text-sm md:text-base"
                 />
               </label>
 
               <label className="block">
-                <span className="font-montserrat text-xs font-normal uppercase tracking-[0.3em] text-night/50">
+                <span className="font-montserrat text-[10px] font-normal uppercase tracking-[0.3em] text-night/50 sm:text-xs">
                   Email..?
                 </span>
                 <input
                   type="email"
-                  className="mt-2 w-full border-b border-night/50 bg-transparent pb-2 font-montserrat text-sm font-normal uppercase tracking-[0.2em] text-night outline-none transition-colors focus:border-night"
+                  className="mt-1.5 w-full border-b border-night/50 bg-transparent pb-2 font-montserrat text-xs font-normal uppercase tracking-[0.2em] text-night outline-none transition-colors focus:border-night sm:mt-2 sm:text-sm md:text-base"
                 />
               </label>
 
               <label className="block">
-                <span className="font-montserrat text-xs font-normal uppercase tracking-[0.3em] text-night/50">
+                <span className="font-montserrat text-[10px] font-normal uppercase tracking-[0.3em] text-night/50 sm:text-xs">
                   Message..?
                 </span>
                 <textarea
                   rows={4}
-                  className="mt-2 w-full resize-none border-b border-night/50 bg-transparent pb-2 font-montserrat text-sm font-normal uppercase tracking-[0.2em] text-night outline-none transition-colors focus:border-night"
+                  className="mt-1.5 w-full resize-none border-b border-night/50 bg-transparent pb-2 font-montserrat text-xs font-normal uppercase tracking-[0.2em] text-night outline-none transition-colors focus:border-night sm:mt-2 sm:text-sm md:text-base"
                 />
               </label>
 
               <button
                 type="submit"
-                className="smooth-hover mt-4 inline-flex w-full items-center justify-center bg-night px-6 py-2.5 font-montserrat text-xs font-normal uppercase tracking-[0.3em] text-white hover:bg-night/90 active:scale-[0.98] sm:w-auto"
+                className="smooth-hover mt-4 inline-flex w-full items-center justify-center bg-night px-6 py-2.5 font-montserrat text-[10px] font-normal uppercase tracking-[0.3em] text-white hover:bg-night/90 active:scale-[0.98] sm:text-xs sm:w-auto md:px-8 md:py-3"
               >
                 Send the Pass
               </button>

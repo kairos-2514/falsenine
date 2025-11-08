@@ -41,15 +41,15 @@ export default function FeaturedProductsSection() {
         <div className="flex flex-col">
           {/* Text Block - Black Background */}
           <div className="bg-night text-white">
-            <div className="p-4 md:p-8 lg:p-16">
-              <div className="space-y-2 font-montserrat text-sm font-normal leading-relaxed uppercase tracking-wide md:text-base">
+            <div className="p-4 sm:p-6 md:p-8 lg:p-12 xl:p-16">
+              <div className="space-y-1.5 font-montserrat text-xs font-normal leading-relaxed uppercase tracking-wide sm:space-y-2 sm:text-sm md:text-base lg:text-lg">
                 <p>LOREM IPSUM DOLOR SIT AMET, CONSECTETUR</p>
                 <p>ADIPISCING ELIT, SED DO EIUSMOD TEMPOR</p>
                 <p>INCIDIDUNT UT LABORE ET DOLORE MAGNA ALIQUA.</p>
               </div>
               <button
                 onClick={handleCTAClick}
-                className="mt-6 font-montserrat text-sm font-bold uppercase tracking-wide transition-opacity hover:opacity-80 md:text-base"
+                className="mt-4 font-montserrat text-xs font-bold uppercase tracking-wide transition-opacity hover:opacity-80 sm:mt-6 sm:text-sm md:text-base lg:text-lg"
                 aria-label="Check the lineup"
               >
                 CHECK THE LINEUP →
@@ -58,7 +58,7 @@ export default function FeaturedProductsSection() {
           </div>
 
           {/* Image */}
-          <div className="relative min-h-[70vh] md:min-h-[80vh] lg:min-h-[90vh]">
+          <div className="relative min-h-[60vh] sm:min-h-[70vh] md:min-h-[80vh] lg:min-h-[90vh]">
             <Image
               src="/images/left-side-image.png"
               alt="Featured product left"
@@ -72,7 +72,7 @@ export default function FeaturedProductsSection() {
         {/* Right Column */}
         <div className="flex flex-col">
           {/* Image */}
-          <div className="relative min-h-[70vh] bg-iron md:min-h-[80vh] lg:min-h-[90vh]">
+          <div className="relative min-h-[60vh] bg-iron sm:min-h-[70vh] md:min-h-[80vh] lg:min-h-[90vh]">
             <Image
               src="/images/right-side-image.png"
               alt="Featured product right"
@@ -84,15 +84,15 @@ export default function FeaturedProductsSection() {
 
           {/* Text Block - Light Blue-Grey Background */}
           <div className="bg-iron text-night">
-            <div className="p-4 md:p-8 lg:p-16">
-              <div className="space-y-2 font-montserrat text-sm font-normal leading-relaxed uppercase tracking-wide md:text-base">
+            <div className="p-4 sm:p-6 md:p-8 lg:p-12 xl:p-16">
+              <div className="space-y-1.5 font-montserrat text-xs font-normal leading-relaxed uppercase tracking-wide sm:space-y-2 sm:text-sm md:text-base lg:text-lg">
                 <p>LOREM IPSUM DOLOR SIT AMET, CONSECTETUR</p>
                 <p>ADIPISCING ELIT, SED DO EIUSMOD TEMPOR</p>
                 <p>INCIDIDUNT UT LABORE ET DOLORE MAGNA ALIQUA.</p>
               </div>
               <button
                 onClick={handleCTAClick}
-                className="mt-6 font-montserrat text-sm font-bold uppercase tracking-wide transition-opacity hover:opacity-80 md:text-base"
+                className="mt-4 font-montserrat text-xs font-bold uppercase tracking-wide transition-opacity hover:opacity-80 sm:mt-6 sm:text-sm md:text-base lg:text-lg"
                 aria-label="Check the lineup"
               >
                 CHECK THE LINEUP →
