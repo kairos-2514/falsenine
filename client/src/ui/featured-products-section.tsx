@@ -3,6 +3,7 @@
 import Image from "next/image";
 import { useNavigation, ROUTES } from "@/lib/navigation";
 import { seoConfig } from "@/config/seo-config";
+import { IMAGES } from "@/config/images";
 
 // ============================================================================
 // FEATURED PRODUCTS SECTION COMPONENT
@@ -41,15 +42,15 @@ export default function FeaturedProductsSection() {
         <div className="flex flex-col">
           {/* Text Block - Black Background */}
           <div className="bg-night text-white">
-            <div className="p-4 md:p-8 lg:p-16">
-              <div className="space-y-2 font-montserrat text-sm font-normal leading-relaxed uppercase tracking-wide md:text-base">
-                <p>LOREM IPSUM DOLOR SIT AMET, CONSECTETUR</p>
-                <p>ADIPISCING ELIT, SED DO EIUSMOD TEMPOR</p>
-                <p>INCIDIDUNT UT LABORE ET DOLORE MAGNA ALIQUA.</p>
+            <div className="p-4 sm:p-6 md:p-8 lg:p-12 xl:p-16">
+              <div className="space-y-1.5 font-montserrat text-xs font-normal leading-relaxed uppercase tracking-wide sm:space-y-2 sm:text-sm md:text-base lg:text-lg">
+                <p className="font-bold">CROSSFADE</p>
+                <p>Understated. Unstoppable.</p>
+                <p>Built for those who let their game do the talking.</p>
               </div>
               <button
                 onClick={handleCTAClick}
-                className="mt-6 font-montserrat text-sm font-bold uppercase tracking-wide transition-opacity hover:opacity-80 md:text-base"
+                className="mt-4 font-montserrat text-xs font-bold uppercase tracking-wide transition-opacity hover:opacity-80 sm:mt-6 sm:text-sm md:text-base lg:text-lg"
                 aria-label="Check the lineup"
               >
                 CHECK THE LINEUP →
@@ -58,9 +59,9 @@ export default function FeaturedProductsSection() {
           </div>
 
           {/* Image */}
-          <div className="relative min-h-[70vh] md:min-h-[80vh] lg:min-h-[90vh]">
+          <div className="relative min-h-[60vh] sm:min-h-[70vh] md:min-h-[80vh] lg:min-h-[90vh]">
             <Image
-              src="/images/left-side-image.png"
+              src={IMAGES.LEFT_SIDE}
               alt="Featured product left"
               fill
               className="object-cover"
@@ -72,9 +73,9 @@ export default function FeaturedProductsSection() {
         {/* Right Column */}
         <div className="flex flex-col">
           {/* Image */}
-          <div className="relative min-h-[70vh] bg-iron md:min-h-[80vh] lg:min-h-[90vh]">
+          <div className="relative min-h-[60vh] bg-iron sm:min-h-[70vh] md:min-h-[80vh] lg:min-h-[90vh]">
             <Image
-              src="/images/right-side-image.png"
+              src={IMAGES.RIGHT_SIDE}
               alt="Featured product right"
               fill
               className="object-cover"
@@ -84,15 +85,15 @@ export default function FeaturedProductsSection() {
 
           {/* Text Block - Light Blue-Grey Background */}
           <div className="bg-iron text-night">
-            <div className="p-4 md:p-8 lg:p-16">
-              <div className="space-y-2 font-montserrat text-sm font-normal leading-relaxed uppercase tracking-wide md:text-base">
-                <p>LOREM IPSUM DOLOR SIT AMET, CONSECTETUR</p>
-                <p>ADIPISCING ELIT, SED DO EIUSMOD TEMPOR</p>
-                <p>INCIDIDUNT UT LABORE ET DOLORE MAGNA ALIQUA.</p>
+            <div className="p-4 sm:p-6 md:p-8 lg:p-12 xl:p-16">
+              <div className="space-y-1.5 font-montserrat text-xs font-normal leading-relaxed uppercase tracking-wide sm:space-y-2 sm:text-sm md:text-base lg:text-lg">
+                <p className="font-bold">REIGN</p>
+                <p>Power. Precision. Presence.</p>
+                <p>For players who rule every moment on and off the pitch.</p>
               </div>
               <button
                 onClick={handleCTAClick}
-                className="mt-6 font-montserrat text-sm font-bold uppercase tracking-wide transition-opacity hover:opacity-80 md:text-base"
+                className="mt-4 font-montserrat text-xs font-bold uppercase tracking-wide transition-opacity hover:opacity-80 sm:mt-6 sm:text-sm md:text-base lg:text-lg"
                 aria-label="Check the lineup"
               >
                 CHECK THE LINEUP →

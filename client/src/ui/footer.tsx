@@ -61,7 +61,7 @@ const FooterLink = memo<FooterLink>(({ href, label, external = false }) => {
     <Link
       href={href}
       {...linkProps}
-      className="smooth-hover font-montserrat text-sm uppercase tracking-wide text-iron hover:text-flame focus:text-flame focus:outline-none focus-visible:ring-2 focus-visible:ring-flame focus-visible:ring-offset-2 focus-visible:ring-offset-night"
+      className="smooth-hover font-montserrat text-xs uppercase tracking-wide text-iron hover:text-flame focus:text-flame focus:outline-none focus-visible:ring-2 focus-visible:ring-flame focus-visible:ring-offset-2 focus-visible:ring-offset-night sm:text-sm md:text-base"
     >
       {label}
     </Link>
@@ -76,7 +76,7 @@ FooterLink.displayName = "FooterLink";
 const NavigationSection = memo<FooterSection>(({ links }) => {
   return (
     <nav
-      className="flex flex-wrap gap-x-8 gap-y-4"
+      className="flex flex-wrap gap-x-4 gap-y-3 sm:gap-x-6 sm:gap-y-4 md:gap-x-8"
       aria-label="Footer navigation"
     >
       {links.map((link) => (
@@ -94,7 +94,7 @@ NavigationSection.displayName = "NavigationSection";
 const SocialSection = memo<FooterSection>(({ links }) => {
   return (
     <nav
-      className="flex flex-wrap gap-x-8 gap-y-4"
+      className="flex flex-wrap gap-x-4 gap-y-3 sm:gap-x-6 sm:gap-y-4 md:gap-x-8"
       aria-label="Social media links"
     >
       {links.map((link) => (
@@ -111,9 +111,9 @@ SocialSection.displayName = "SocialSection";
  */
 const BrandHeader = memo(() => {
   return (
-    <div className="mb-8" role="banner">
+    <div className="mb-6 sm:mb-8" role="banner">
       <h2
-        className="font-thunder font-extralight text-5xl uppercase tracking-wider text-white md:text-6xl"
+        className="font-thunder font-extralight text-3xl uppercase tracking-wider text-white sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl"
         aria-label="FalseNine"
       >
         FALSENINE
@@ -131,14 +131,14 @@ const CopyrightBar = memo(() => {
   const currentYear = new Date().getFullYear();
 
   return (
-    <div className="bg-white px-4 py-6 text-night md:px-8 lg:px-16">
-      <div className="flex flex-col items-center gap-4 md:flex-row md:justify-between">
-        <p className="font-montserrat text-xs" role="contentinfo">
+    <div className="bg-white px-4 py-4 text-night sm:px-6 sm:py-5 md:px-8 md:py-6 lg:px-16">
+      <div className="flex flex-col items-center gap-3 text-center sm:gap-4 md:flex-row md:justify-between md:text-left">
+        <p className="font-montserrat text-[10px] sm:text-xs md:text-sm" role="contentinfo">
           <span aria-label={`Copyright ${currentYear} FalseNine`}>
             © {currentYear} FALSENINE. ALL RIGHTS RESERVED.
           </span>
         </p>
-        <p className="font-montserrat text-xs">
+        <p className="font-montserrat text-[10px] sm:text-xs md:text-sm">
           GAME BUILT. STREET TESTED. BY{" "}
           <Link
             href={SOCIAL_LINKS.DEVELOPERS}
@@ -169,7 +169,7 @@ const Footer = memo(() => {
       aria-label="Site footer"
     >
       {/* Main Footer Content */}
-      <div className="px-4 py-12 md:px-8 lg:px-16">
+      <div className="px-4 py-8 sm:px-6 sm:py-10 md:px-8 md:py-12 lg:px-16 lg:py-16">
         {/* Brand */}
         <BrandHeader />
 

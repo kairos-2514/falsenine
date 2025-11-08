@@ -27,26 +27,26 @@ export default function Navbar() {
       role="navigation"
       aria-label="Main navigation"
     >
-      <div className="mx-auto px-4 md:px-8 lg:px-16">
-        <div className="flex items-center justify-between py-6">
+      <div className="mx-auto px-4 sm:px-6 md:px-8 lg:px-12 xl:px-16">
+        <div className="flex items-center justify-between py-4 sm:py-5 md:py-6">
           {/* Logo - Left */}
           <Link
             href={SOCIAL_LINKS.DEVELOPERS}
-            className="font-falsenine text-2xl font-normal uppercase tracking-wider text-white transition-opacity hover:opacity-80"
+            className="font-falsenine text-lg font-normal uppercase tracking-wider text-white transition-opacity hover:opacity-80 sm:text-xl md:text-2xl"
             aria-label="KAIROS Home"
           >
             KAIROS
           </Link>
 
           {/* Navigation Links - Center (Desktop/Tablet) */}
-          <div className="absolute left-1/2 hidden -translate-x-1/2 transform items-center gap-8 md:flex">
+          <div className="absolute left-1/2 hidden -translate-x-1/2 transform items-center gap-6 md:flex lg:gap-8 xl:gap-10">
             {mainNavLinks.map((link) => {
               const isActive = pathname === link.href;
               return (
                 <Link
                   key={link.href}
                   href={link.href}
-                  className={`smooth-hover font-montserrat text-sm uppercase tracking-wider ${
+                  className={`smooth-hover font-montserrat text-xs uppercase tracking-wider sm:text-sm md:text-sm lg:text-base ${
                     isActive ? "text-white" : "text-white/80 hover:text-white"
                   }`}
                 >
@@ -59,7 +59,7 @@ export default function Navbar() {
           {/* Player Card - Right (Desktop/Tablet) */}
           <Link
             href={playerCardLink.href}
-            className={`smooth-hover font-montserrat hidden text-sm uppercase tracking-wider md:block ${
+            className={`smooth-hover font-montserrat hidden text-xs uppercase tracking-wider sm:text-sm md:block md:text-sm lg:text-base ${
               pathname === playerCardLink.href
                 ? "text-white"
                 : "text-white/80 hover:text-white"
@@ -105,7 +105,7 @@ export default function Navbar() {
 
         {/* Mobile Menu Dropdown */}
         {isMobileMenuOpen && (
-          <div className="pb-4 md:hidden">
+          <div className="border-t border-white/10 pb-6 pt-4 md:hidden">
             <div className="flex flex-col space-y-4">
               {mainNavLinks.map((link) => {
                 const isActive = pathname === link.href;
