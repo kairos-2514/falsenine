@@ -1,6 +1,8 @@
 import express from "express";
 import cors from "cors";
 import contactRoutes from "./routes/contactRoutes";
+import authRoutes from "./routes/authRoutes";
+import addressRoutes from "./routes/addressRoutes";
 
 const app = express();
 
@@ -14,5 +16,7 @@ app.get("/", (req, res) => {
 });
 
 app.use("/api/contact", contactRoutes);
+app.use("/api/auth", authRoutes);
+app.use("/api/address", addressRoutes);
 
 export default app;
