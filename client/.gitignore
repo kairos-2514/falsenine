@@ -44,3 +44,5 @@ next-env.d.ts
 # ds store
 .DS_Store
 
+# majnubhai ki painting
+.excalidraw

@@ -11,23 +11,29 @@ export default function AboutSection() {
           {/* Top Content */}
           <div className="px-4 sm:px-6 md:px-8 lg:px-16 xl:px-20">
             <p className="max-w-md font-montserrat text-xs font-normal leading-relaxed uppercase tracking-wide text-night/70 sm:text-sm md:text-base lg:text-lg">
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
-              eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut
-              enim ad minim veniam, quis nostrud exercitation ullamco laboris
-              nisi ut aliquip ex ea commodo consequat.
+              FALSENINE IS MORE THAN A LABEL.
+            </p>
+            <p className="max-w-md font-montserrat text-xs font-normal leading-relaxed uppercase tracking-wide text-night/70 sm:text-sm md:text-base lg:text-lg">
+              WE MERGE FOOTBALL CULTURE WITH STREET AESTHETICS,
+            </p>
+            <p className="max-w-md font-montserrat text-xs font-normal leading-relaxed uppercase tracking-wide text-night/70 sm:text-sm md:text-base lg:text-lg">
+              DESIGNED FOR THOSE WHO PLAY HARD AND LIVE LOUD.
+            </p>
+            <p className="max-w-md font-montserrat text-xs font-normal leading-relaxed uppercase tracking-wide text-night/70 sm:text-sm md:text-base lg:text-lg">
+              EVERY PIECE TELLS A STORY — BUILT FOR THE STREETS,INSPIRED BY THE
+              GAME.
             </p>
           </div>
 
           {/* Bottom Content */}
           <div className="px-4 sm:px-6 md:px-8 lg:px-16 xl:px-20">
             <div className="flex flex-wrap gap-3 font-montserrat font-bold text-[10px] uppercase tracking-[0.35em] text-night sm:gap-4 sm:text-xs md:text-sm">
-              <span>Keyword</span>
-              <span>Keyword</span>
+              <span>BUILT</span>
+              <span>DIFFERENT</span>
             </div>
 
             <p className="mt-4 max-w-sm font-montserrat text-xs font-normal leading-relaxed uppercase tracking-[0.2em] text-night/70 sm:mt-6 sm:text-sm md:text-base lg:text-lg">
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
-              eiusmod tempor incididunt ut labore et dolore magna aliqua.
+              ENGINEERED FOR MOVEMENT, EXPRESSION, AND THE UNAPOLOGETIC.
             </p>
           </div>
         </div>
