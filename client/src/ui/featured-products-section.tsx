@@ -66,6 +66,7 @@ export default function FeaturedProductsSection() {
               fill
               className="object-cover"
               quality={100}
+              unoptimized
             />
           </div>
         </div>
@@ -80,6 +81,7 @@ export default function FeaturedProductsSection() {
               fill
               className="object-cover"
               quality={100}
+              unoptimized
             />
           </div>
 

@@ -89,6 +89,7 @@ export default function ContactSection() {
           fill
           className="object-cover"
           quality={100}
+          unoptimized
         />
       </div>
 

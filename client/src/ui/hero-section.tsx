@@ -52,6 +52,7 @@ export default function HeroSection() {
           className="object-cover"
           priority
           quality={100}
+          unoptimized
         />
         {/* Blur Overlay */}
         <div className="absolute inset-0 bg-black/10 backdrop-blur-[0.5px]" />

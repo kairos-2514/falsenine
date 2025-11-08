@@ -28,6 +28,7 @@ export default function BannerSection() {
           fill
           className="object-cover"
           quality={100}
+          unoptimized
         />
       </div>
 

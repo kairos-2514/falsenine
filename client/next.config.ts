@@ -9,9 +9,11 @@ const nextConfig: NextConfig = {
         hostname: "falsenine-image-storage.s3.ap-south-1.amazonaws.com",
       },
     ],
-    // Increase timeout for external image optimization
     minimumCacheTTL: 60,
     dangerouslyAllowSVG: false,
+    // Device sizes for responsive images
+    deviceSizes: [640, 750, 828, 1080, 1200, 1920, 2048, 3840],
+    imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
   },
 };
 
