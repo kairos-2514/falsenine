@@ -244,11 +244,29 @@ export default function LockerPage() {
         {checkoutStep === "auth" && (
           <section className="px-4 py-8 sm:px-6 sm:py-12 md:px-8 md:py-16 lg:px-16 lg:py-20">
             <AuthForm
-              onSuccess={(user) => {
+              onSuccess={async (user) => {
                 // Save user data to localStorage for persistent login
                 saveUserData(user);
                 setCurrentUser(user);
-                setCheckoutStep("address");
+                
+                // Check if user already has an address
+                setLoadingAddress(true);
+                try {
+                  const addressResponse = await getUserAddress(user.userId);
+                  if (addressResponse.data) {
+                    // User has address - show confirmation
+                    setSavedAddress(addressResponse.data);
+                    setCheckoutStep("address-confirm");
+                  } else {
+                    // User doesn't have address - show address form
+                    setCheckoutStep("address");
+                  }
+                } catch {
+                  // Address not found or error - show address form
+                  setCheckoutStep("address");
+                } finally {
+                  setLoadingAddress(false);
+                }
               }}
               onCancel={() => setCheckoutStep("cart")}
             />
