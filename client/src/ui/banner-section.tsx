@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import { useNavigation, ROUTES } from "@/lib/navigation";
+import { IMAGES } from "@/config/images";
 
 // ============================================================================
 // BANNER SECTION COMPONENT
@@ -22,11 +23,10 @@ export default function BannerSection() {
       {/* Background Image */}
       <div className="absolute inset-0">
         <Image
-          src="/images/banner-image.png"
+          src={IMAGES.BANNER}
           alt="Banner section background"
           fill
           className="object-cover"
-          priority
           quality={100}
         />
       </div>

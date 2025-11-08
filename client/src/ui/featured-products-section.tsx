@@ -3,6 +3,7 @@
 import Image from "next/image";
 import { useNavigation, ROUTES } from "@/lib/navigation";
 import { seoConfig } from "@/config/seo-config";
+import { IMAGES } from "@/config/images";
 
 // ============================================================================
 // FEATURED PRODUCTS SECTION COMPONENT
@@ -60,7 +61,7 @@ export default function FeaturedProductsSection() {
           {/* Image */}
           <div className="relative min-h-[60vh] sm:min-h-[70vh] md:min-h-[80vh] lg:min-h-[90vh]">
             <Image
-              src="/images/left-side-image.png"
+              src={IMAGES.LEFT_SIDE}
               alt="Featured product left"
               fill
               className="object-cover"
@@ -74,7 +75,7 @@ export default function FeaturedProductsSection() {
           {/* Image */}
           <div className="relative min-h-[60vh] bg-iron sm:min-h-[70vh] md:min-h-[80vh] lg:min-h-[90vh]">
             <Image
-              src="/images/right-side-image.png"
+              src={IMAGES.RIGHT_SIDE}
               alt="Featured product right"
               fill
               className="object-cover"

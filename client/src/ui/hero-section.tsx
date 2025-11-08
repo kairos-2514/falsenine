@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import { IMAGES } from "@/config/images";
 
 // ============================================================================
 // HERO SECTION COMPONENT
@@ -16,7 +17,7 @@ export default function HeroSection() {
       <div className="relative z-10 flex min-h-screen flex-col justify-end">
         <div className="relative w-full px-4 pb-8 md:px-6 md:pb-12 lg:px-16 lg:pb-16">
           {/* Bottom Right - Descriptive Text */}
-          <div className="mb-6 space-y-4 text-left sm:mb-8 sm:space-y-6 md:mb-0 md:absolute md:bottom-[200px] md:right-6 md:mb-0 md:text-right lg:bottom-[364px] lg:right-16 xl:space-y-8">
+          <div className="mb-6 space-y-4 text-left sm:mb-8 sm:space-y-6 md:absolute md:bottom-[200px] md:right-6 md:mb-0 md:text-right lg:bottom-[364px] lg:right-16 xl:space-y-8">
             <p className="font-montserrat text-sm font-normal uppercase tracking-[0.2em] text-white sm:text-base md:text-lg">
               ( PLAY DIFFERENT )
             </p>
@@ -45,7 +46,7 @@ export default function HeroSection() {
       {/* Background Image */}
       <div className="absolute inset-0">
         <Image
-          src="/images/hero-section-image.png"
+          src={IMAGES.HERO_SECTION}
           alt="FalseNine Hero"
           fill
           className="object-cover"

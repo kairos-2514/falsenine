@@ -59,7 +59,10 @@ export const metadata: Metadata = {
     },
   },
   icons: {
-    icon: "/icon.svg",
+    icon: [
+      { url: "/icon.svg", type: "image/svg+xml" },
+      { url: "/icon.svg", type: "image/svg+xml", sizes: "any" },
+    ],
     apple: "/apple-icon.png",
   },
   authors: [{ name: "FalseNine", url: "https://falseninejersey.shop" }],
@@ -105,6 +108,9 @@ export default function RootLayout({
         <link rel="dns-prefetch" href="https://instagram.com" />
         <link rel="dns-prefetch" href="https://x.com" />
         <link rel="dns-prefetch" href="https://pinterest.com" />
+
+        {/* Favicon */}
+        <link rel="icon" href="/icon.svg" type="image/svg+xml" />
 
         {/* Structured Data for SEO */}
         <script

@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import { IMAGES } from "@/config/images";
 
 export default function ContactSection() {
   return (
@@ -8,11 +9,10 @@ export default function ContactSection() {
       {/* Image Column */}
       <div className="relative min-h-[50vh] sm:min-h-[60vh] md:min-h-[calc(100vh-196px)]">
         <Image
-          src="/images/contact-section-image.png"
+          src={IMAGES.CONTACT_SECTION}
           alt="Contact FalseNine"
           fill
           className="object-cover"
-          priority
           quality={100}
         />
       </div>
