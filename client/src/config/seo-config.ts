@@ -652,7 +652,7 @@ const getPageMetadata = (routePath: string): GeneratedMetaTags => {
 
   if (!routeMetadata) {
     return generateMetaTags({
-      title: `${BRAND_INFO.siteName} - Premium Football Streetwear`,
+      title: `${BRAND_INFO.siteName}`,
       description: `${BRAND_INFO.tagline}. Shop premium production grade jerseys.`,
       keywords: [...KEYWORDS.primary],
       url: `${BRAND_INFO.siteUrl}${routePath}`,
