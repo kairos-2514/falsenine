@@ -27,8 +27,12 @@ export default function BannerSection() {
           alt="Banner section background"
           fill
           className="object-cover"
-          quality={100}
+          priority
+          quality={90}
           unoptimized
+          fetchPriority="high"
+          decoding="sync"
+          loading="eager"
         />
       </div>
 

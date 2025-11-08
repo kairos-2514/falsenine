@@ -104,6 +104,31 @@ export default function RootLayout({
           crossOrigin="anonymous"
         />
 
+        {/* Preconnect to S3 for faster image loading */}
+        <link
+          rel="preconnect"
+          href="https://falsenine-image-storage.s3.ap-south-1.amazonaws.com"
+          crossOrigin="anonymous"
+        />
+        <link
+          rel="dns-prefetch"
+          href="https://falsenine-image-storage.s3.ap-south-1.amazonaws.com"
+        />
+
+        {/* Preload critical images for instant loading */}
+        <link
+          rel="preload"
+          as="image"
+          href={`${process.env.NEXT_PUBLIC_S3_BASE_URL || "https://falsenine-image-storage.s3.ap-south-1.amazonaws.com"}/${process.env.NEXT_PUBLIC_IMAGE_HERO_SECTION || "hero-section-image.png"}`}
+          fetchPriority="high"
+        />
+        <link
+          rel="preload"
+          as="image"
+          href={`${process.env.NEXT_PUBLIC_S3_BASE_URL || "https://falsenine-image-storage.s3.ap-south-1.amazonaws.com"}/${process.env.NEXT_PUBLIC_IMAGE_BANNER || "banner-image.png"}`}
+          fetchPriority="high"
+        />
+
         {/* DNS Prefetch for social media platforms */}
         <link rel="dns-prefetch" href="https://instagram.com" />
         <link rel="dns-prefetch" href="https://x.com" />
@@ -120,7 +145,7 @@ export default function RootLayout({
           }}
         />
       </head>
-      <body className="antialiased">
+      <body className="antialiased" suppressHydrationWarning>
         <Navbar />
         {children}
         <Footer />

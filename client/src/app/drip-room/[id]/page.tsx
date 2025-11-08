@@ -97,8 +97,12 @@ export default function ProductDetailPage() {
               alt={product.pName}
               fill
               className="object-cover object-top"
-              quality={100}
               priority
+              quality={90}
+              unoptimized
+              fetchPriority="high"
+              decoding="sync"
+              loading="eager"
             />
           </div>
 

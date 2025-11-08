@@ -26,7 +26,9 @@ const ProductCard = ({ product }: { product: Product }) => {
           alt={product.pName}
           fill
           className="object-cover transition-transform duration-500 group-hover:scale-105"
-          quality={100}
+          loading="lazy"
+          quality={85}
+          unoptimized
         />
       </div>
 
@@ -89,8 +91,12 @@ export default function DripRoomPage() {
               alt="Drip Room"
               fill
               className="object-cover object-center"
-              quality={100}
+              quality={90}
               priority
+              unoptimized
+              fetchPriority="high"
+              decoding="sync"
+              loading="eager"
             />
             <div className="absolute inset-0 bg-gradient-to-r from-black/60 via-black/30 to-transparent" />
           </div>

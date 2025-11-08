@@ -65,8 +65,10 @@ export default function FeaturedProductsSection() {
               alt="Featured product left"
               fill
               className="object-cover"
-              quality={100}
+              quality={85}
               unoptimized
+              decoding="sync"
+              loading="eager"
             />
           </div>
         </div>
@@ -80,8 +82,10 @@ export default function FeaturedProductsSection() {
               alt="Featured product right"
               fill
               className="object-cover"
-              quality={100}
+              quality={85}
               unoptimized
+              decoding="sync"
+              loading="eager"
             />
           </div>
 

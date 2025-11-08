@@ -47,8 +47,10 @@ export default function AboutSection() {
           alt="About FalseNine"
           fill
           className="object-cover"
-          quality={100}
+          quality={85}
           unoptimized
+          decoding="sync"
+          loading="eager"
         />
       </div>
     </section>
