@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 import { ROUTE_METADATA, socialLinks as SOCIAL_LINKS } from "@/lib/navigation";
 import { seoConfig } from "@/config/seo-config";
-
+import Script from "next/script";
 // ui elements
 import Navbar from "@/ui/navbar";
 import Footer from "@/ui/footer";
@@ -119,13 +119,22 @@ export default function RootLayout({
         <link
           rel="preload"
           as="image"
-          href={`${process.env.NEXT_PUBLIC_S3_BASE_URL || "https://falsenine-image-storage.s3.ap-south-1.amazonaws.com"}/${process.env.NEXT_PUBLIC_IMAGE_HERO_SECTION || "hero-section-image.png"}`}
+          href={`${
+            process.env.NEXT_PUBLIC_S3_BASE_URL ||
+            "https://falsenine-image-storage.s3.ap-south-1.amazonaws.com"
+          }/${
+            process.env.NEXT_PUBLIC_IMAGE_HERO_SECTION ||
+            "hero-section-image.png"
+          }`}
           fetchPriority="high"
         />
         <link
           rel="preload"
           as="image"
-          href={`${process.env.NEXT_PUBLIC_S3_BASE_URL || "https://falsenine-image-storage.s3.ap-south-1.amazonaws.com"}/${process.env.NEXT_PUBLIC_IMAGE_BANNER || "banner-image.png"}`}
+          href={`${
+            process.env.NEXT_PUBLIC_S3_BASE_URL ||
+            "https://falsenine-image-storage.s3.ap-south-1.amazonaws.com"
+          }/${process.env.NEXT_PUBLIC_IMAGE_BANNER || "banner-image.png"}`}
           fetchPriority="high"
         />
 
@@ -149,6 +158,10 @@ export default function RootLayout({
         <Navbar />
         {children}
         <Footer />
+        <Script
+          src="https://checkout.razorpay.com/v1/checkout.js"
+          strategy="afterInteractive"
+        />
       </body>
     </html>
   );

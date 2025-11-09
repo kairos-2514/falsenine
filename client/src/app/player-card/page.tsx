@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, FormEvent } from "react";
+import Image from "next/image";
 import { getUserProfile, updateUserProfile, UserProfile } from "@/api/auth";
 import {
   getUserAddress,
@@ -8,8 +9,10 @@ import {
   AddressData,
   AddressResponse,
 } from "@/api/address";
+import { getUserOrders, OrderMetadata } from "@/api/order";
 import { ApiError } from "@/api/config";
 import { getUserId, clearUserData, saveUserData } from "@/lib/auth";
+import { getProductImage } from "@/config/images";
 import AuthForm from "@/ui/auth-form";
 
 // ============================================================================
@@ -264,7 +267,9 @@ export default function PlayerCardPage() {
   const [userId, setUserId] = useState<string | null>(null);
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [address, setAddress] = useState<AddressResponse | null>(null);
+  const [orders, setOrders] = useState<OrderMetadata[]>([]);
   const [loading, setLoading] = useState(true);
+  const [loadingOrders, setLoadingOrders] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [editingProfile, setEditingProfile] = useState(false);
   const [editingAddress, setEditingAddress] = useState(false);
@@ -287,6 +292,36 @@ export default function PlayerCardPage() {
       setShowAuth(true);
     }
   }, []);
+
+  // Refresh orders when component mounts or userId changes
+  useEffect(() => {
+    if (userId) {
+      loadOrders(userId);
+    }
+  }, [userId]);
+
+  // Refresh orders when page becomes visible or focused (user navigates back)
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === "visible" && userId) {
+        loadOrders(userId);
+      }
+    };
+
+    const handleFocus = () => {
+      if (userId) {
+        loadOrders(userId);
+      }
+    };
+
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+    window.addEventListener("focus", handleFocus);
+    
+    return () => {
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
+      window.removeEventListener("focus", handleFocus);
+    };
+  }, [userId]);
 
   const handleLoginSuccess = (user: { userId: string; email: string; name: string }) => {
     saveUserData(user);
@@ -336,6 +371,29 @@ export default function PlayerCardPage() {
       }
     } finally {
       setLoading(false);
+    }
+  };
+
+  const loadOrders = async (id: string) => {
+    try {
+      setLoadingOrders(true);
+      console.log("Loading orders for user:", id);
+      const ordersResponse = await getUserOrders(id);
+      if (ordersResponse.data) {
+        console.log("Orders loaded:", ordersResponse.data.length);
+        setOrders(ordersResponse.data);
+      } else {
+        setOrders([]);
+      }
+    } catch (err) {
+      console.error("Error loading orders:", err);
+      if (err instanceof ApiError) {
+        // Don't show error for orders, just log it
+        console.error("Failed to load orders:", err.message);
+      }
+      setOrders([]);
+    } finally {
+      setLoadingOrders(false);
     }
   };
 
@@ -631,6 +689,155 @@ export default function PlayerCardPage() {
               </div>
             )}
           </div>
+        </div>
+
+        {/* Orders Section */}
+        <div className="mt-8 space-y-6 border border-night/10 bg-white p-6 sm:p-8">
+          <h2 className="font-montserrat text-sm font-bold uppercase tracking-wide text-night sm:text-base md:text-lg">
+            ORDER HISTORY
+          </h2>
+
+          {loadingOrders ? (
+            <div className="py-8 text-center">
+              <p className="font-montserrat text-xs font-normal uppercase tracking-wide text-night/60 sm:text-sm">
+                Loading orders...
+              </p>
+            </div>
+          ) : orders.length === 0 ? (
+            <div className="py-8 text-center">
+              <p className="font-montserrat text-xs font-normal uppercase tracking-wide text-night/60 sm:text-sm">
+                No orders yet
+              </p>
+            </div>
+          ) : (
+            <div className="space-y-6">
+              {orders.map((order) => (
+                <div
+                  key={order.orderId}
+                  className="border-b border-night/10 pb-6 last:border-b-0 last:pb-0"
+                >
+                  <div className="mb-4 flex flex-col justify-between gap-4 sm:flex-row sm:items-start">
+                    <div>
+                      <p className="font-montserrat text-[10px] font-normal uppercase tracking-[0.3em] text-night/50 sm:text-xs">
+                        Order ID
+                      </p>
+                      <p className="mt-1.5 font-montserrat text-xs font-bold uppercase tracking-[0.2em] text-night sm:text-sm md:text-base">
+                        {order.orderId}
+                      </p>
+                    </div>
+                    <div className="text-right">
+                      <p className="font-montserrat text-[10px] font-normal uppercase tracking-[0.3em] text-night/50 sm:text-xs">
+                        Status
+                      </p>
+                      <p className="mt-1.5 font-montserrat text-xs font-bold uppercase tracking-[0.2em] text-night sm:text-sm md:text-base">
+                        {order.orderStatus}
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="mb-4">
+                    <p className="font-montserrat text-[10px] font-normal uppercase tracking-[0.3em] text-night/50 sm:text-xs">
+                      Date
+                    </p>
+                    <p className="mt-1.5 font-montserrat text-xs font-normal uppercase tracking-[0.2em] text-night/70 sm:text-sm md:text-base">
+                      {new Date(order.createdAt).toLocaleDateString("en-US", {
+                        year: "numeric",
+                        month: "long",
+                        day: "numeric",
+                      })}
+                    </p>
+                  </div>
+
+                  <div className="mb-4 space-y-3">
+                    <p className="font-montserrat text-[10px] font-normal uppercase tracking-[0.3em] text-night/50 sm:text-xs">
+                      Items
+                    </p>
+                    {order.items.map((item, index) => {
+                      // Validate and sanitize image URL
+                      const isValidImageUrl = (url: string | undefined): boolean => {
+                        if (!url || typeof url !== 'string') return false;
+                        // Check if it contains unresolved env variables
+                        if (url.includes('${') || url.includes('process.env')) return false;
+                        // Check if it's a valid URL format
+                        try {
+                          new URL(url);
+                          return true;
+                        } catch {
+                          // If it's a relative path, check if it starts with http
+                          return url.startsWith('http://') || url.startsWith('https://');
+                        }
+                      };
+
+                      // Try to get image URL - first from item, then fallback to product image helper
+                      let imageUrl: string | null = null;
+                      if (item.image && isValidImageUrl(item.image)) {
+                        imageUrl = item.image;
+                      } else if (item.productId) {
+                        // Fallback to product image helper if item image is invalid
+                        try {
+                          imageUrl = getProductImage(item.productId);
+                        } catch {
+                          imageUrl = null;
+                        }
+                      }
+
+                      return (
+                        <div
+                          key={index}
+                          className="flex items-start gap-4 border-b border-night/5 pb-3 last:border-b-0 last:pb-0"
+                        >
+                          {imageUrl ? (
+                            <div className="relative h-16 w-16 flex-shrink-0 overflow-hidden bg-iron">
+                              <Image
+                                src={imageUrl}
+                                alt={item.productName}
+                                fill
+                                className="object-cover"
+                                quality={80}
+                                onError={(e) => {
+                                  console.error("Failed to load order item image:", imageUrl);
+                                  e.currentTarget.style.display = 'none';
+                                }}
+                              />
+                            </div>
+                          ) : (
+                            <div className="relative h-16 w-16 flex-shrink-0 overflow-hidden bg-iron flex items-center justify-center">
+                              <span className="font-montserrat text-[8px] uppercase text-night/30">No Image</span>
+                            </div>
+                          )}
+                          <div className="flex-1">
+                            <p className="font-montserrat text-xs font-bold uppercase tracking-wide text-night sm:text-sm">
+                              {item.productName}
+                            </p>
+                            {item.productDescription && (
+                              <p className="mt-1 font-montserrat text-[10px] font-normal uppercase tracking-wide text-night/60 sm:text-xs line-clamp-2">
+                                {item.productDescription}
+                              </p>
+                            )}
+                            <p className="mt-1 font-montserrat text-[10px] font-normal uppercase tracking-wide text-night/60 sm:text-xs">
+                              Size: {item.selectedSize || "N/A"} | Qty: {item.quantity} | ₹{item.pricePerUnit.toLocaleString()} each
+                            </p>
+                            <p className="mt-1 font-montserrat text-xs font-bold uppercase tracking-wide text-flame sm:text-sm">
+                              ₹{item.totalPrice.toLocaleString()}
+                            </p>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+
+                  <div className="flex justify-between border-t border-night/10 pt-4">
+                    <p className="font-montserrat text-[10px] font-normal uppercase tracking-[0.3em] text-night/50 sm:text-xs">
+                      Total Amount
+                    </p>
+                    <p className="font-montserrat text-sm font-bold uppercase tracking-wide text-night sm:text-base md:text-lg">
+                      ₹{order.totalAmount.toLocaleString()}
+                    </p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       </section>
     </main>
