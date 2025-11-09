@@ -52,6 +52,36 @@ export default function LockerPage() {
     }
   }, []);
 
+  // Step 2: Check Razorpay availability on mount and periodically
+  useEffect(() => {
+    const checkRazorpay = () => {
+      console.log("🔍 CHECKING RAZORPAY AVAILABILITY:");
+      console.log("- Window defined:", typeof window !== 'undefined');
+      const razorpayAvailable = typeof window !== 'undefined' && typeof (window as any).Razorpay !== 'undefined';
+      console.log("- Razorpay available:", razorpayAvailable);
+      
+      if (typeof window !== 'undefined') {
+        if (razorpayAvailable) {
+          console.log("✅ Razorpay is available");
+          (window as any).razorpayLoaded = true;
+        } else {
+          console.warn("⚠️ Razorpay not yet loaded, will check again...");
+          (window as any).razorpayLoaded = false;
+        }
+      }
+    };
+
+    // Check immediately
+    checkRazorpay();
+
+    // Check again after a delay (script might still be loading)
+    const timeout = setTimeout(() => {
+      checkRazorpay();
+    }, 2000);
+
+    return () => clearTimeout(timeout);
+  }, []);
+
   // Handle proceed to checkout
   const handleProceedToCheckout = async () => {
     const userId = getUserId();
@@ -139,23 +169,17 @@ export default function LockerPage() {
     }
 
     setProcessingPayment(true);
+    console.log("💾 SAVING ORDER (using test button logic)...");
+    
     try {
       const totalAmount = calculateTotal();
-      
-      // Create Razorpay order
-      const { data: razorpayOrder } = await axios.post(
-        "http://localhost:4000/api/v2/razorpay/create-transaction",
-        { amount: totalAmount }
-      );
-
-      // Prepare order data for saving
-      const orderId = `ORD_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
       const orderData = {
-        orderId,
+        orderId: `ORD_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
         userId: currentUser.userId,
         userEmail: currentUser.email,
-        totalAmount: Number(totalAmount), // Ensure it's a number
+        totalAmount: totalAmount,
         currency: "INR",
+        orderStatus: "PAID",
         shippingAddress: {
           fullName: String(savedAddress.fullName || ''),
           phoneNumber: String(savedAddress.phoneNumber || ''),
@@ -176,210 +200,41 @@ export default function LockerPage() {
           selectedSize: item.selectedSize ? String(item.selectedSize) : undefined,
           image: item.image ? String(item.image) : undefined,
         })),
-      };
-      
-      console.log("Order data prepared:", JSON.stringify(orderData, null, 2));
-
-      // Check if Razorpay is loaded
-      const windowWithRazorpay = window as unknown as { Razorpay?: new (options: unknown) => { open: () => void } };
-      if (typeof window === 'undefined' || !windowWithRazorpay.Razorpay) {
-        console.error("❌ Razorpay script not loaded!");
-        alert("Payment gateway not loaded. Please refresh the page and try again.");
-        setProcessingPayment(false);
-        return;
-      }
-      console.log("✅ Razorpay script is loaded");
-
-      // Initialize Razorpay
-      const options = {
-        key: process.env.NEXT_PUBLIC_RAZORPAY_TEST_KEY_ID,
-        amount: razorpayOrder.amount,
-        currency: razorpayOrder.currency,
-        name: "FalseNine",
-        description: `Order #${orderId}`,
-        order_id: razorpayOrder.id,
-        handler: async function (response: {
-          razorpay_order_id: string;
-          razorpay_payment_id: string;
-          razorpay_signature: string;
-        }) {
-          console.log("\n🎉🎉🎉 ========================================");
-          console.log("🎉🎉🎉 PAYMENT HANDLER CALLED - RAZORPAY SUCCESS");
-          console.log("🎉🎉🎉 ========================================");
-          console.log("Timestamp:", new Date().toISOString());
-          console.log("Razorpay response:", JSON.stringify(response, null, 2));
-          console.log("Order ID:", orderData.orderId);
-          console.log("User ID:", orderData.userId);
-          console.log("Total Amount:", orderData.totalAmount);
-          console.log("Items count:", orderData.items.length);
-          
-          try {
-            
-            // CRITICAL: Save order FIRST, before verification
-            // This ensures order is saved even if verification fails
-            console.log("\n💾 SAVING ORDER IMMEDIATELY (before verification)...");
-            console.log("Endpoint: http://localhost:4000/api/orders/test-save");
-            console.log("Order data being sent:", {
-              orderId: orderData.orderId,
-              userId: orderData.userId,
-              totalAmount: orderData.totalAmount,
-              itemsCount: orderData.items.length,
-            });
-            
-            try {
-              const saveResponse = await axios.post(
-                "http://localhost:4000/api/orders/test-save",
-                {
-                  ...orderData,
-                  orderStatus: "PAID",
-                  razorpayOrderId: response.razorpay_order_id,
-                  razorpayPaymentId: response.razorpay_payment_id,
-                  createdAt: new Date().toISOString(),
-                },
-                {
-                  headers: {
-                    'Content-Type': 'application/json',
-                  },
-                  timeout: 30000, // 30 second timeout - increased
-                }
-              );
-              console.log("\n✅✅✅ ORDER SAVED TO DYNAMODB ✅✅✅");
-              console.log("Save response status:", saveResponse.status);
-              console.log("Save response data:", saveResponse.data);
-            } catch (saveError: unknown) {
-              console.error("\n❌❌❌ CRITICAL: Failed to save order directly ❌❌❌");
-              const isAxiosError = axios.isAxiosError(saveError);
-              if (isAxiosError) {
-                console.error("Error status:", saveError.response?.status);
-                console.error("Error data:", saveError.response?.data);
-                console.error("Error message:", saveError.message);
-                console.error("Request URL:", saveError.config?.url);
-                console.error("Request method:", saveError.config?.method);
-                console.error("Request data:", saveError.config?.data);
-              } else {
-                console.error("Non-Axios error:", saveError);
-              }
-              // Try one more time with verification endpoint as backup
-              console.log("\n🆘 RETRY: Attempting to save via verify-payment endpoint...");
-              try {
-                const verifyResponse = await axios.post(
-                  "http://localhost:4000/api/v2/razorpay/verify-payment",
-                  {
-                    razorpay_order_id: response.razorpay_order_id,
-                    razorpay_payment_id: response.razorpay_payment_id,
-                    razorpay_signature: response.razorpay_signature,
-                    orderData: {
-                      ...orderData,
-                      orderStatus: "PAID",
-                      razorpayOrderId: response.razorpay_order_id,
-                      razorpayPaymentId: response.razorpay_payment_id,
-                      createdAt: new Date().toISOString(),
-                    },
-                  },
-                  {
-                    headers: {
-                      'Content-Type': 'application/json',
-                    },
-                    timeout: 30000,
-                  }
-                );
-                console.log("✅ Order saved via verify-payment endpoint");
-                console.log("Response:", verifyResponse.data);
-              } catch (verifyError: unknown) {
-                console.error("❌ Verify-payment save also failed:", verifyError);
-                throw saveError; // Throw original error
-              }
-            }
-            
-            // Order is saved, proceed with success flow
-            console.log("\n✅✅✅ PAYMENT COMPLETE - ORDER SAVED ✅✅✅");
-            console.log("Order ID:", orderData.orderId);
-            
-            // Clear cart on successful payment
-            clearCart();
-            setCartItems([]);
-            
-            // Small delay to ensure order is saved before redirect
-            setTimeout(() => {
-              // Redirect to player card to see order history
-              navigateTo(ROUTES.PLAYER_CARD);
-            }, 1000); // Increased delay to 1 second
-          } catch (error: unknown) {
-            console.error("❌ CRITICAL ERROR in payment handler:", error);
-            const isAxiosError = axios.isAxiosError(error);
-            
-            // Last resort: try to save order one more time
-            console.log("🆘 LAST RESORT: Attempting final order save...");
-            try {
-              await axios.post(
-                "http://localhost:4000/api/orders/test-save",
-                {
-                  ...orderData,
-                  orderStatus: "PAID",
-                  razorpayOrderId: response?.razorpay_order_id,
-                  razorpayPaymentId: response?.razorpay_payment_id,
-                  createdAt: new Date().toISOString(),
-                },
-                {
-                  headers: {
-                    'Content-Type': 'application/json',
-                  },
-                  timeout: 10000,
-                }
-              );
-              console.log("✅ Order saved via last resort method");
-              clearCart();
-              setCartItems([]);
-              navigateTo(ROUTES.PLAYER_CARD);
-            } catch (finalError: unknown) {
-              console.error("❌❌❌ ALL ORDER SAVE ATTEMPTS FAILED ❌❌❌");
-              console.error("Final error:", finalError);
-              const errorMessage = isAxiosError 
-                ? (error.response?.data?.error || error.response?.data?.message || error.message || "Payment successful but order save failed.")
-                : (error instanceof Error ? error.message : "Payment successful but order save failed.");
-              alert(`Payment Successful! However, order save failed. Please contact support with Order ID: ${orderData.orderId}\n\nError: ${errorMessage}`);
-            }
-          } finally {
-            setProcessingPayment(false);
-          }
-        },
-        prefill: {
-          name: savedAddress.fullName,
-          email: currentUser.email,
-          contact: savedAddress.phoneNumber,
-        },
-        theme: {
-          color: "#000000",
-        },
-        modal: {
-          ondismiss: function() {
-            setProcessingPayment(false);
-          },
-        },
+        razorpayOrderId: "PAID",
+        razorpayPaymentId: "PAID",
+        createdAt: new Date().toISOString(),
       };
 
-      console.log("🚀 Opening Razorpay payment modal...");
-      console.log("Razorpay options:", {
-        key: options.key ? "✅ Set" : "❌ Missing",
-        amount: options.amount,
-        currency: options.currency,
-        order_id: options.order_id,
-        hasHandler: !!options.handler,
-      });
+      console.log("📤 Sending order:", JSON.stringify(orderData, null, 2));
+
+      const response = await axios.post(
+        "http://localhost:4000/api/orders/test-save",
+        orderData,
+        {
+          headers: { 'Content-Type': 'application/json' },
+          timeout: 30000,
+        }
+      );
+
+      console.log("✅ Order save response:", response.data);
       
-      try {
-        const rzp = new (window as unknown as { Razorpay: new (options: unknown) => { open: () => void } }).Razorpay(options);
-        console.log("✅ Razorpay instance created, opening modal...");
-        rzp.open();
-        console.log("✅ Razorpay modal opened");
-      } catch (rzpError: unknown) {
-        console.error("❌ Failed to create Razorpay instance:", rzpError);
-        alert("Failed to initialize payment. Please try again.");
-        setProcessingPayment(false);
+      if (response.data.success) {
+        console.log("✅✅✅ ORDER SAVED SUCCESSFULLY ✅✅✅");
+        clearCart();
+        setCartItems([]);
+        navigateTo(ROUTES.PLAYER_CARD);
+      } else {
+        throw new Error(response.data.error || "Order save failed");
       }
     } catch (error) {
-      console.error("Payment error:", error);
-      alert("Failed to initiate payment. Please try again.");
+      console.error("❌ Order save failed:", error);
+      const errorMessage = axios.isAxiosError(error)
+        ? error.response?.data?.error || error.message || "Unknown error"
+        : error instanceof Error
+        ? error.message
+        : "Unknown error";
+      alert("❌ Order save failed: " + errorMessage);
+    } finally {
       setProcessingPayment(false);
     }
   };
