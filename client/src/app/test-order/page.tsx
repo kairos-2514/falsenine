@@ -3,9 +3,17 @@
 import { useState } from "react";
 import axios from "axios";
 
+interface OrderSaveResponse {
+  success: boolean;
+  orderId?: string;
+  error?: string;
+  message?: string;
+  [key: string]: unknown;
+}
+
 export default function TestOrderPage() {
   const [loading, setLoading] = useState(false);
-  const [result, setResult] = useState<any>(null);
+  const [result, setResult] = useState<OrderSaveResponse | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   // Sample product IDs from your DynamoDB
@@ -122,7 +130,7 @@ export default function TestOrderPage() {
     });
   };
 
-  const updateItem = (index: number, field: string, value: any) => {
+  const updateItem = (index: number, field: string, value: string | number) => {
     const newItems = [...formData.items];
     newItems[index] = { ...newItems[index], [field]: value };
     if (field === "quantity" || field === "pricePerUnit") {

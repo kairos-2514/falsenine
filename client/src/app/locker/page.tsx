@@ -20,6 +20,11 @@ import { getUserAddress, AddressResponse } from "@/api/address";
 
 type CheckoutStep = "cart" | "auth" | "address" | "address-confirm";
 
+interface WindowWithRazorpay extends Window {
+  Razorpay?: new (options: unknown) => { open: () => void };
+  razorpayLoaded?: boolean;
+}
+
 export default function LockerPage() {
   const { navigateTo } = useNavigation();
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
@@ -57,16 +62,17 @@ export default function LockerPage() {
     const checkRazorpay = () => {
       console.log("🔍 CHECKING RAZORPAY AVAILABILITY:");
       console.log("- Window defined:", typeof window !== 'undefined');
-      const razorpayAvailable = typeof window !== 'undefined' && typeof (window as any).Razorpay !== 'undefined';
+      const windowWithRazorpay = window as WindowWithRazorpay;
+      const razorpayAvailable = typeof window !== 'undefined' && typeof windowWithRazorpay.Razorpay !== 'undefined';
       console.log("- Razorpay available:", razorpayAvailable);
       
       if (typeof window !== 'undefined') {
         if (razorpayAvailable) {
           console.log("✅ Razorpay is available");
-          (window as any).razorpayLoaded = true;
+          windowWithRazorpay.razorpayLoaded = true;
         } else {
           console.warn("⚠️ Razorpay not yet loaded, will check again...");
-          (window as any).razorpayLoaded = false;
+          windowWithRazorpay.razorpayLoaded = false;
         }
       }
     };
@@ -252,7 +258,7 @@ export default function LockerPage() {
       }
 
       // Step 4: Check if Razorpay is loaded
-      const windowWithRazorpay = window as unknown as { Razorpay?: new (options: unknown) => { open: () => void } };
+      const windowWithRazorpay = window as WindowWithRazorpay;
       if (typeof window === 'undefined' || !windowWithRazorpay.Razorpay) {
         console.error("❌ Razorpay script not loaded!");
         alert("Payment gateway not loaded. Please refresh the page and try again.");
