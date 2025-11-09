@@ -2,8 +2,8 @@ import express from "express";
 import {
   getUserOrdersHandler,
   getOrderByIdHandler,
-  testSaveOrderHandler,
   getRecentOrdersHandler,
+  testOrderSaveHandler,
 } from "../controllers/orderController";
 
 const orderRouter = express.Router();
@@ -21,8 +21,8 @@ orderRouter.get("/health/test", (req, res) => {
 // Get recent orders
 orderRouter.get("/recent/all", getRecentOrdersHandler);
 
-// Test save endpoint - MUST come before /:orderId
-orderRouter.post("/test-save", testSaveOrderHandler); // For debugging - CRITICAL ENDPOINT
+// Test endpoint for saving orders (for debugging)
+orderRouter.post("/test-save", testOrderSaveHandler);
 
 // User orders
 orderRouter.get("/user/:userId", getUserOrdersHandler);

@@ -118,40 +118,68 @@ export const verifyPayment = async (req: Request, res: Response) => {
     }
     
     console.log("✅ Order data validation passed");
+    console.log("📞 Calling saveOrder function...");
     
-    // Save order to DynamoDB
-    await saveOrder({
+    // Prepare order data exactly like test-save endpoint does
+    const orderPayload = {
       orderId: orderData.orderId,
       userId: orderData.userId,
-      userEmail: orderData.userEmail,
-      orderStatus: "PAID",
-      totalAmount: orderData.totalAmount,
+      userEmail: orderData.userEmail || "test@example.com",
+      orderStatus: orderData.orderStatus || "PAID",
+      totalAmount: orderData.totalAmount || 0,
       currency: orderData.currency || "INR",
-      shippingAddress: orderData.shippingAddress,
+      shippingAddress: orderData.shippingAddress || {
+        fullName: "Test User",
+        phoneNumber: "+919876543210",
+        addressLine1: "123 Test Street",
+        city: "Mumbai",
+        state: "Maharashtra",
+        pinCode: "400001",
+        country: "India",
+      },
       razorpayOrderId: razorpay_order_id,
       razorpayPaymentId: razorpay_payment_id,
-      createdAt: new Date().toISOString(),
+      createdAt: orderData.createdAt || new Date().toISOString(),
       items: orderData.items || [],
-    });
+    };
     
-    console.log("\n✅✅✅ ORDER SAVED SUCCESSFULLY TO DYNAMODB ✅✅✅");
-    console.log("Order ID:", orderData.orderId);
-    console.log("User ID:", orderData.userId);
-    console.log("Total Amount:", orderData.totalAmount);
-    console.log("========================================\n");
+    console.log("Prepared order payload:", JSON.stringify(orderPayload, null, 2));
+    
+    // Save order to DynamoDB using the same logic as test-save
+    try {
+      await saveOrder(orderPayload);
+      
+      console.log("\n✅✅✅ ORDER SAVED SUCCESSFULLY TO DYNAMODB ✅✅✅");
+      console.log("Order ID:", orderPayload.orderId);
+      console.log("User ID:", orderPayload.userId);
+      console.log("Total Amount:", orderPayload.totalAmount);
+      console.log("========================================\n");
 
-    // Return success response
-    res.status(200).json({
-      success: true,
-      message: signatureValid ? "Payment verified and order saved successfully" : "Order saved successfully (test mode)",
-      orderId: orderData.orderId,
-    });
-  } catch (error) {
+      // Return success response
+      res.status(200).json({
+        success: true,
+        message: signatureValid ? "Payment verified and order saved successfully" : "Order saved successfully (test mode)",
+        orderId: orderPayload.orderId,
+      });
+    } catch (saveError: unknown) {
+      console.error("\n❌❌❌ ERROR IN saveOrder FUNCTION ❌❌❌");
+      console.error("Error type:", saveError instanceof Error ? saveError.constructor.name : typeof saveError);
+      console.error("Error message:", saveError instanceof Error ? saveError.message : String(saveError));
+      console.error("Error stack:", saveError instanceof Error ? saveError.stack : "No stack");
+      console.error("Order ID that failed:", orderPayload.orderId);
+      console.error("Full error object:", JSON.stringify(saveError, Object.getOwnPropertyNames(saveError), 2));
+      console.error("========================================\n");
+      
+      // Re-throw to be caught by outer catch
+      throw saveError;
+    }
+  } catch (error: unknown) {
     console.error("\n❌❌❌ CRITICAL ERROR IN ORDER SAVE ❌❌❌");
-    console.error("Error type:", error?.constructor?.name);
+    console.error("Error type:", error instanceof Error ? error.constructor.name : typeof error);
     console.error("Error message:", error instanceof Error ? error.message : String(error));
     console.error("Error stack:", error instanceof Error ? error.stack : "No stack");
     console.error("Order ID that failed:", orderData?.orderId);
+    console.error("Full error object:", JSON.stringify(error, Object.getOwnPropertyNames(error), 2));
     console.error("========================================\n");
     
     // Return error response

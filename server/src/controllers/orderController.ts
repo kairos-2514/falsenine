@@ -339,12 +339,33 @@ export const saveOrder = async (
       console.log(`     - ${item.productName} (${item.selectedSize || 'N/A'}) x${item.quantity} = ₹${(item.pricePerUnit * item.quantity).toLocaleString()}`);
     }
     console.log(`✅ COMPLETE: Order ${orderId} fully saved to DynamoDB with ${orderData.items.length} items\n`);
+    
+    // Verify the order was actually saved by querying it back
+    try {
+      const verifyCommand = new GetCommand({
+        TableName: TABLE_NAME,
+        Key: {
+          PK: `ORDER#${orderId}`,
+          SK: "METADATA",
+        },
+      });
+      const verifyResult = await ddbDocClient.send(verifyCommand);
+      if (verifyResult.Item) {
+        console.log(`✅ VERIFICATION: Order ${orderId} confirmed in DynamoDB`);
+      } else {
+        console.error(`❌ VERIFICATION FAILED: Order ${orderId} not found in DynamoDB after save!`);
+      }
+    } catch (verifyError) {
+      console.error(`❌ Error verifying order save:`, verifyError);
+    }
   } catch (error) {
     console.error("❌ CRITICAL ERROR in saveOrder function:", error);
     if (error instanceof Error) {
       console.error("Error message:", error.message);
       console.error("Error stack:", error.stack);
     }
+    // Log full error details
+    console.error("Full error:", JSON.stringify(error, Object.getOwnPropertyNames(error), 2));
     throw error;
   }
 };
@@ -657,57 +678,53 @@ export const getRecentOrdersHandler = async (
 };
 
 /**
- * Test endpoint to save order directly (for debugging)
+ * Test endpoint to save order directly (for debugging/testing)
  */
-export const testSaveOrderHandler = async (
+export const testOrderSaveHandler = async (
   req: Request,
   res: Response
 ): Promise<Response | void> => {
   try {
-    console.log("\n🚨🚨🚨 TEST SAVE ORDER ENDPOINT CALLED 🚨🚨🚨");
+    console.log("\n🧪 ========================================");
+    console.log("🧪 TEST ORDER SAVE ENDPOINT CALLED");
+    console.log("🧪 ========================================");
     console.log("Timestamp:", new Date().toISOString());
-    console.log("Request method:", req.method);
+    console.log("Request Method:", req.method);
     console.log("Request URL:", req.url);
-    console.log("Request headers:", JSON.stringify(req.headers, null, 2));
+    console.log("Request Headers:", JSON.stringify(req.headers, null, 2));
     
     const orderData = req.body;
-    console.log("\n📦 Request body received:");
-    console.log("Order data keys:", Object.keys(orderData || {}));
-    console.log("Full order data:", JSON.stringify(orderData, null, 2));
-    
-    // Check DynamoDB connection
-    console.log("\n🔍 Checking DynamoDB configuration:");
-    console.log("Table name:", TABLE_NAME);
-    console.log("DynamoDB client:", ddbDocClient ? "✅ Initialized" : "❌ Not initialized");
+    console.log("\n📦 Request Body Received:");
+    console.log("Body type:", typeof orderData);
+    console.log("Body keys:", orderData ? Object.keys(orderData) : "NO BODY");
+    console.log("Full body:", JSON.stringify(orderData, null, 2));
     
     // Validate required fields
     if (!orderData) {
-      console.error("❌ No order data in request body");
       res.status(400).json({
         success: false,
-        error: "Order data is required in request body",
+        error: "Order data is required",
       });
       return;
     }
     
     if (!orderData.orderId) {
-      console.error("❌ Missing orderId");
       res.status(400).json({
         success: false,
         error: "orderId is required",
       });
       return;
     }
+    
     if (!orderData.userId) {
-      console.error("❌ Missing userId");
       res.status(400).json({
         success: false,
         error: "userId is required",
       });
       return;
     }
+    
     if (!orderData.items || !Array.isArray(orderData.items) || orderData.items.length === 0) {
-      console.error("❌ Missing or empty items array");
       res.status(400).json({
         success: false,
         error: "items array is required and must not be empty",
@@ -715,45 +732,71 @@ export const testSaveOrderHandler = async (
       return;
     }
     
-    console.log("\n✅ Validation passed, calling saveOrder...");
-    console.log("Order ID:", orderData.orderId);
-    console.log("User ID:", orderData.userId);
-    console.log("Items count:", orderData.items.length);
+    // Ensure required fields have defaults
+    const testOrderData: OrderMetadata = {
+      orderId: orderData.orderId,
+      userId: orderData.userId,
+      userEmail: orderData.userEmail || "test@example.com",
+      orderStatus: orderData.orderStatus || "PAID",
+      totalAmount: orderData.totalAmount || 0,
+      currency: orderData.currency || "INR",
+      shippingAddress: orderData.shippingAddress || {
+        fullName: "Test User",
+        phoneNumber: "+919876543210",
+        addressLine1: "123 Test Street",
+        city: "Mumbai",
+        state: "Maharashtra",
+        pinCode: "400001",
+        country: "India",
+      },
+      razorpayOrderId: orderData.razorpayOrderId,
+      razorpayPaymentId: orderData.razorpayPaymentId,
+      createdAt: orderData.createdAt || new Date().toISOString(),
+      items: orderData.items,
+    };
     
-    // Call saveOrder with detailed error handling
-    try {
-      await saveOrder(orderData);
-      console.log("\n✅✅✅ saveOrder completed successfully ✅✅✅");
-      console.log("Order ID:", orderData.orderId);
-      
-      res.json({
-        success: true,
-        message: "Order saved successfully to DynamoDB",
-        orderId: orderData.orderId,
-        timestamp: new Date().toISOString(),
-      });
-    } catch (saveError: unknown) {
-      console.error("\n❌❌❌ saveOrder function threw an error ❌❌❌");
-      console.error("Error type:", saveError instanceof Error ? saveError.constructor.name : typeof saveError);
-      console.error("Error message:", saveError instanceof Error ? saveError.message : String(saveError));
-      console.error("Error stack:", saveError instanceof Error ? saveError.stack : "No stack");
-      throw saveError; // Re-throw to be caught by outer catch
-    }
+    console.log("\n✅ Validation passed!");
+    console.log("Prepared Order Data:");
+    console.log("  Order ID:", testOrderData.orderId);
+    console.log("  User ID:", testOrderData.userId);
+    console.log("  User Email:", testOrderData.userEmail);
+    console.log("  Total Amount:", testOrderData.totalAmount);
+    console.log("  Items count:", testOrderData.items.length);
+    console.log("  Order Status:", testOrderData.orderStatus);
+    console.log("  Has Shipping Address:", !!testOrderData.shippingAddress);
+    
+    console.log("\n📞 Calling saveOrder function...");
+    console.log("This should trigger: 💾💾💾 saveOrder FUNCTION CALLED 💾💾💾");
+    
+    // Call saveOrder
+    await saveOrder(testOrderData);
+    
+    console.log("\n✅✅✅ saveOrder completed - TEST ORDER SAVED SUCCESSFULLY ✅✅✅");
+    console.log("Order ID:", testOrderData.orderId);
+    console.log("Sending success response to client...");
+    
+    res.json({
+      success: true,
+      message: "Order saved successfully to DynamoDB",
+      orderId: testOrderData.orderId,
+      timestamp: new Date().toISOString(),
+    });
+    
+    console.log("✅ Response sent to client");
   } catch (error: unknown) {
-    console.error("\n❌❌❌ CRITICAL ERROR in test save order handler ❌❌❌");
+    console.error("\n❌❌❌ ERROR IN TEST ORDER SAVE ❌❌❌");
     console.error("Error type:", error instanceof Error ? error.constructor.name : typeof error);
     console.error("Error message:", error instanceof Error ? error.message : String(error));
     console.error("Error stack:", error instanceof Error ? error.stack : "No stack");
     
     const errorMessage = error instanceof Error ? error.message : String(error);
-    const errorStack = error instanceof Error ? error.stack : undefined;
     
     res.status(500).json({
       success: false,
       error: errorMessage,
-      details: errorStack,
       timestamp: new Date().toISOString(),
     });
   }
 };
+
 
