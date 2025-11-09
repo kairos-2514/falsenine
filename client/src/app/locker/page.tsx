@@ -169,12 +169,22 @@ export default function LockerPage() {
     }
 
     setProcessingPayment(true);
-    console.log("💾 SAVING ORDER (using test button logic)...");
     
     try {
       const totalAmount = calculateTotal();
+      
+      // Step 1: Create Razorpay order
+      console.log("💳 Creating Razorpay order...");
+      const { data: razorpayOrder } = await axios.post(
+        "http://localhost:4000/api/v2/razorpay/create-transaction",
+        { amount: totalAmount }
+      );
+      console.log("✅ Razorpay order created:", razorpayOrder.id);
+
+      // Step 2: Prepare order data
+      const orderId = `ORD_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
       const orderData = {
-        orderId: `ORD_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+        orderId,
         userId: currentUser.userId,
         userEmail: currentUser.email,
         totalAmount: totalAmount,
@@ -200,41 +210,110 @@ export default function LockerPage() {
           selectedSize: item.selectedSize ? String(item.selectedSize) : undefined,
           image: item.image ? String(item.image) : undefined,
         })),
-        razorpayOrderId: "PAID",
-        razorpayPaymentId: "PAID",
+        razorpayOrderId: razorpayOrder.id,
+        razorpayPaymentId: "TEST_MODE",
         createdAt: new Date().toISOString(),
       };
-
-      console.log("📤 Sending order:", JSON.stringify(orderData, null, 2));
-
-      const response = await axios.post(
-        "http://localhost:4000/api/orders/test-save",
-        orderData,
-        {
-          headers: { 'Content-Type': 'application/json' },
-          timeout: 30000,
-        }
-      );
-
-      console.log("✅ Order save response:", response.data);
       
-      if (response.data.success) {
-        console.log("✅✅✅ ORDER SAVED SUCCESSFULLY ✅✅✅");
-        clearCart();
-        setCartItems([]);
-        navigateTo(ROUTES.PLAYER_CARD);
-      } else {
-        throw new Error(response.data.error || "Order save failed");
+      console.log("📦 Order data prepared:", orderData.orderId);
+
+      // Step 3: Save order to DynamoDB IMMEDIATELY (before opening Razorpay modal)
+      // This is for test mode - order is saved as soon as Razorpay is called
+      console.log("💾 Saving order to DynamoDB immediately (test mode):");
+      console.log("📤 Order payload:", JSON.stringify(orderData, null, 2));
+
+      try {
+        const saveResponse = await axios.post(
+          "http://localhost:4000/api/orders/test-save",
+          orderData,
+          {
+            headers: { 'Content-Type': 'application/json' },
+            timeout: 30000,
+          }
+        );
+
+        console.log("✅ Order save response:", saveResponse.data);
+        
+        if (!saveResponse.data.success) {
+          throw new Error(saveResponse.data.error || "Order save failed");
+        }
+        
+        console.log("✅✅✅ ORDER SAVED SUCCESSFULLY TO DYNAMODB ✅✅✅");
+      } catch (saveError) {
+        console.error("❌ Order save failed:", saveError);
+        const errorMessage = axios.isAxiosError(saveError)
+          ? saveError.response?.data?.error || saveError.message || "Unknown error"
+          : saveError instanceof Error
+          ? saveError.message
+          : "Unknown error";
+        alert(`Order save failed before opening payment.\n\nOrder ID: ${orderData.orderId}\nError: ${errorMessage}\n\nPlease try again.`);
+        setProcessingPayment(false);
+        return;
       }
+
+      // Step 4: Check if Razorpay is loaded
+      const windowWithRazorpay = window as unknown as { Razorpay?: new (options: unknown) => { open: () => void } };
+      if (typeof window === 'undefined' || !windowWithRazorpay.Razorpay) {
+        console.error("❌ Razorpay script not loaded!");
+        alert("Payment gateway not loaded. Please refresh the page and try again.");
+        setProcessingPayment(false);
+        return;
+      }
+
+      // Step 5: Initialize Razorpay (order already saved, just handle payment UI)
+      const options = {
+        key: process.env.NEXT_PUBLIC_RAZORPAY_TEST_KEY_ID,
+        amount: razorpayOrder.amount,
+        currency: razorpayOrder.currency,
+        name: "FalseNine",
+        description: `Order #${orderId}`,
+        order_id: razorpayOrder.id,
+        handler: async function (razorpayResponse: {
+          razorpay_order_id: string;
+          razorpay_payment_id: string;
+          razorpay_signature: string;
+        }) {
+          console.log("\n🎉🎉🎉 RAZORPAY PAYMENT SUCCESSFUL 🎉🎉🎉");
+          console.log("Payment Response:", JSON.stringify(razorpayResponse, null, 2));
+          console.log("✅ Order already saved to DynamoDB before payment");
+          
+          // Order is already saved, just clear cart and redirect
+          clearCart();
+          setCartItems([]);
+          navigateTo(ROUTES.PLAYER_CARD);
+          setProcessingPayment(false);
+        },
+        prefill: {
+          name: savedAddress.fullName,
+          email: currentUser.email,
+          contact: savedAddress.phoneNumber,
+        },
+        theme: {
+          color: "#000000",
+        },
+        modal: {
+          ondismiss: function() {
+            console.log("❌ Razorpay modal dismissed");
+            // Order is already saved, just reset processing state
+            setProcessingPayment(false);
+          },
+        },
+      };
+
+      // Step 6: Open Razorpay payment modal (order already saved to DB)
+      console.log("🚀 Opening Razorpay payment modal (order already saved to DB)...");
+      const rzp = new windowWithRazorpay.Razorpay(options);
+      rzp.open();
+      console.log("✅ Razorpay modal opened");
+      
     } catch (error) {
-      console.error("❌ Order save failed:", error);
+      console.error("❌ Error in handlePayment:", error);
       const errorMessage = axios.isAxiosError(error)
-        ? error.response?.data?.error || error.message || "Unknown error"
+        ? error.response?.data?.error || error.message || "Failed to initialize payment"
         : error instanceof Error
         ? error.message
-        : "Unknown error";
-      alert("❌ Order save failed: " + errorMessage);
-    } finally {
+        : "Failed to initialize payment";
+      alert("Payment initialization failed: " + errorMessage);
       setProcessingPayment(false);
     }
   };
