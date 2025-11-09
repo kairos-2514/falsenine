@@ -5,10 +5,13 @@
 /**
  * Base API URL
  * Can be configured via NEXT_PUBLIC_API_URL environment variable
- * Defaults to http://localhost:4000 for development
+ * Defaults to Lambda API URL for production, localhost for development
  */
 export const API_BASE_URL =
-  process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000";
+  process.env.NEXT_PUBLIC_API_URL || 
+  (process.env.NODE_ENV === "production" 
+    ? "https://keqnorvuhe.execute-api.ap-south-1.amazonaws.com"
+    : "http://localhost:4000");
 
 /**
  * Default fetch options
